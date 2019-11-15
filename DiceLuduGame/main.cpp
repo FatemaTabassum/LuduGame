@@ -28,10 +28,9 @@ using namespace std;
 
 
 #pragma mark DEFINE
-#define SCREEN_WIDTH 525 // must be a divisor of 15
-#define SCREEN_HEIGHT 525 // height is equal to width
-#define SMALL_SQUARE 35 // 525/15 = 35
-#define BIG_SQUARE 210 // 35 * 6 // a = 6b, 2a + 3b = width, 12b + 3b = width, 15b = width, width = height
+#define SCREEN_WIDTH 570 // must be a divisor of 15
+#define SCREEN_HEIGHT SCREEN_WIDTH // height is equal to width
+#define DIVIDER_CONSTANT 15 // 35 * 6 // a = 6b, 2a + 3b = width, 12b + 3b = width, 15b = width, width = height
 #define LUDU_BOARD_LENGTH 400
 #define COLOR_LINE_WIDTH 5
 #define TOTAL_SQUARE_SHARED 53
@@ -53,14 +52,26 @@ struct MousePosition {
     double yPos;
 };
 
+struct squarePosition {
+    double xPos;
+    double yPos;
+    double zPos;
+} sqPos;
+
 
 #pragma mark variables
 GLFWwindow *window;
 const GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
 const GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
 const GLfloat halfSideLength = 200;
+const GLfloat smallSquareLength = SCREEN_WIDTH / DIVIDER_CONSTANT;
+const GLfloat bigSquareLength = smallSquareLength * 6;
+const GLfloat numberOfBigSquare = 4;
 int screenWidth, screenHeight;
 MousePosition currentMousePos;
+
+vector <squarePosition> smallSquarePositionV[100];
+vector <squarePosition> bigSquarePositionV[4];
 
 
 #pragma mark Functions Prototype
@@ -73,7 +84,9 @@ void cursorEnterCallBack( GLFWwindow *window, int entered );
 void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods);
 void addEventToTheScreen();
 void addBackgroundAestheticWithFrame( int screenWidth,  int screenHeight);
-void drawGameBoards(screenWidth, screenHeight);
+void drawGameBoards(int screenWidth, int screenHeight);
+void drawSmallSquares();
+void drawBigSquares();
 
 #pragma mark Main
 int main(void) {
@@ -211,9 +224,101 @@ void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight) {
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void drawGameBoards(screenWidth, screenHeight) {
+
+
+void drawGameBoards(int screenWidth, int screenHeight) {
+    drawBigSquares();
+    drawSmallSquares();
+}
+
+
+void drawRect(GLfloat allRectVertices[], Colors clr) {
+    glEnableClientState( GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, allRectVertices);
+    setColor(clr);
+    glDrawArrays(GL_POLYGON, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void saveBigSquareVertex(GLfloat x, GLfloat y, GLfloat z, int ind) {
+    squarePosition s;
+    s.xPos = x;
+    s.yPos = y;
+    s.zPos = 0;
+    bigSquarePositionV[ind].push_back(s);
+    return;
+}
+
+void drawSmallSquares() {
     
 }
+
+void drawBigSquares() {
+    
+    for (int i = 0; i < numberOfBigSquare; i++) {
+        if (i == 0) {
+            saveBigSquareVertex(0,0,0, i);
+            saveBigSquareVertex(bigSquareLength, 0, 0, i);
+            saveBigSquareVertex(bigSquareLength, bigSquareLength, 0, i);
+            saveBigSquareVertex(0, bigSquareLength, 0, i);
+            
+            GLfloat allRectVertices[] = {
+                0, 0, 0,
+                bigSquareLength, 0, 0,
+                bigSquareLength, bigSquareLength, 0,
+                0, bigSquareLength, 0
+            };
+            drawRect(allRectVertices, GREEN);
+        } else if( i == 1) {
+            
+            saveBigSquareVertex(0, (bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex(bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex(0, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+            
+            GLfloat allRectVertices[] = {
+                0, (bigSquareLength + 3 * smallSquareLength), 0,
+                bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0,
+                bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0,
+                0, (2 * bigSquareLength + 3 * smallSquareLength), 0,
+                
+            };
+            drawRect(allRectVertices, YELLOW);
+        } else if( i == 2) {
+            
+            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+            
+            GLfloat allRectVertices[] = {
+                (bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
+                (2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
+                (2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
+                (bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
+                
+            };
+            drawRect(allRectVertices, BLUE);
+        }
+        else if( i == 3) {
+            
+            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), 0, 0, i);
+            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), 0, 0, i);
+            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
+            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
+            
+            GLfloat allRectVertices[] = {
+                (bigSquareLength + 3 * smallSquareLength), 0, 0,
+                (2 * bigSquareLength + 3 * smallSquareLength), 0, 0,
+                (2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
+                (bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
+                
+            };
+            drawRect(allRectVertices, RED);
+        }
+    }
+}
+
 
 
 #pragma mark Initialize
