@@ -1,5 +1,5 @@
 //
-//  Player.cpp
+//  GameHelperObjects.cpp
 //  DiceLuduGame
 //
 //  Created by Fatema on 11/13/19.
@@ -7,6 +7,15 @@
 //
 
 #include <stdio.h>
+
+
+enum Colors {
+    RED,
+    GREEN,
+    BLUE,
+    YELLOW,
+    WHITE
+};
 
 
 class Position
@@ -47,33 +56,60 @@ public:
 
 
 
-
-
+class Token {
+private:
+    Position pos;
+    unsigned int token_id;
+    bool isHome;
+    
+public:
+    void setPos(Position pos) {
+        this->pos = pos;
+    }
+    void setTokenId(unsigned int id) {
+        this->token_id = id;
+    }
+    unsigned int getTokenId() {
+        return this->token_id;
+    }
+    bool getIsHome() {
+        return isHome;
+    }
+    void setIsHome(bool isHome) {
+        this->isHome = isHome;
+    }
+};
 
 
 class Player{
 private:
-    Position pos;//player has attribute of type class Position
+    Position pos;
+    Token token;
+    //player has attribute of type class Position
     
 public:
     int posindex;
     int status;
     int homeway;
+    Colors color;
     
-//    Player(){
-//        status=0;
-//        homeway=0;
-//    }
-//
-//    void setposition(int pindex,Position p){
-//        posindex=pindex;
-//        pos=p;
-//    }
-//
+    Player(){
+        status=0;
+        homeway=0;
+    }
+    void setPosition(int pindex,Position p){
+        posindex=pindex;
+        pos=p;
+    }
+    void setToken(Token token) {
+        this->token = token;
+    }
+    void setColor(Colors color) {
+        this->color = color;
+    }
 //    void display(int b){
 //        pos.display(b);
 //    }
-    
 };
 
 
