@@ -6,17 +6,6 @@
 //  Copyright © 2019 Liza. All rights reserved.
 //
 
-
-
-
-
-
-
-
-
-
-
-
 #pragma mark INCLUDES
 #include <iostream>
 #include <GL/glew.h>
@@ -24,42 +13,33 @@
 #include <math.h>
 #include <vector>
 #include "GameHelperObjects.cpp"
+
 using namespace std;
 
+/************* Macros *************/
 
-#pragma mark DEFINE
 #define SCREEN_WIDTH 570 // must be a divisor of 15
 #define SCREEN_HEIGHT SCREEN_WIDTH // height is equal to width
 #define DIVIDER_CONSTANT 15 // 35 * 6 // a = 6b, 2a + 3b = width, 12b + 3b = width, 15b = width, width = height
 #define LUDU_BOARD_LENGTH 400
 #define COLOR_LINE_WIDTH 5
-#define TOTAL_SQUARE_SHARED 53
-#define TOTAL_SQUARE ( 53 + 20 )
+#define TOTAL_SMALL_SQUARE_SHARED 53
+#define TOTAL_SMALL_SQUARE ( 53 + 20 )
 
 #define pb(x) push_back(x)
 
-#pragma mark Enums
-//enum Colors {
-//    RED,
-//    GREEN,
-//    BLUE,
-//    YELLOW,
-//    WHITE
-//};
+#pragma mark Structures
+/******** Structures ************/
 
 struct MousePosition {
     double xPos;
     double yPos;
 };
 
-struct squarePosition {
-    double xPos;
-    double yPos;
-    double zPos;
-} sqPos;
 
+#pragma mark Global Variables
+/********* Global Variables **********/
 
-#pragma mark variables
 GLFWwindow *window;
 const GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
 const GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
@@ -68,12 +48,18 @@ const GLfloat smallSquareLength = SCREEN_WIDTH / DIVIDER_CONSTANT;
 const GLfloat bigSquareLength = smallSquareLength * 6;
 const GLfloat numberOfBigSquare = 4;
 int screenWidth, screenHeight;
-MousePosition currentMousePos;
+Position currentMousePos;
+int numberOfTotalPlayers = 4;
+vector <Player> playerCurrentlyPlayingList;
 
-vector <squarePosition> smallSquarePositionV[100];
-vector <squarePosition> bigSquarePositionV[4];
+Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
+
+vector <Square> smallSquareSharedPositionVector;
+vector <Square> smallSquarePlayerSpecificVector;
+vector <Square> bigSquarePositionV[4];
 
 
+/*********** Function Prototype **********/
 #pragma mark Functions Prototype
 void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOfSides );
 int initialize_window();
@@ -97,7 +83,6 @@ int main(void) {
     render_opengl();
     return 0;
 }
-
 
 #pragma mark Render Opengl
 void render_opengl() {
@@ -123,19 +108,28 @@ void setColor(Colors clr) {
     glLineWidth(COLOR_LINE_WIDTH);
     switch (clr) {
         case RED:
-            glColor3f (1.0, 0.0, 0.0);  /* the current RGB color is red: */
+            glColor3f (1.0, 0.0, 0.0);  /* the current RGB color is RED: */
             break;
         case GREEN:
-            glColor3f (0.0, 1.0, 0.0);  /* the current RGB color is red: */
+            glColor3f (0.0, 1.0, 0.0);  /* the current RGB color is GREEN: */
             break;
         case BLUE:
-            glColor3f (0.0, 0.0, 1.0);  /* the current RGB color is red: */
+            glColor3f (0.0, 0.0, 1.0);  /* the current RGB color is BLUE: */
             break;
         case YELLOW:
-            glColor3f (1.0, 1.0, 0.0);  /* the current RGB color is red: */
+            glColor3f (1.0, 1.0, 0.0);  /* the current RGB color is YELLOW: */
             break;
         case WHITE:
-            glColor3f (1.0, 1.0, 1.0);  /* the current RGB color is red: */
+            glColor3f (1.0, 1.0, 1.0);  /* the current RGB color is WHITE: */
+            break;
+        case PURPLE:
+            glColor3f (1.0, 0.0, 1.0 );  /* the current RGB color is PURPLE: */
+            break;
+        case CYAN:
+            glColor3f (0.0, 1.0, 1.0 );  /* the current RGB color is PURPLE: */
+            break;
+        case DARKGREEN:
+            glColor3f (0.0, 0.5, 0.0 );  /* the current RGB color is PURPLE: */
             break;
         default:
             break;
@@ -152,8 +146,7 @@ void addEventToTheScreen() {
 }
 static void cursorPositionCallBack(GLFWwindow *window, double xPos, double yPos) {
     cout << xPos << "   " << yPos << endl;
-    currentMousePos.xPos = xPos;
-    currentMousePos.yPos = yPos;
+    currentMousePos.setCoord(xPos, yPos);
 }
 
 //void cursorEnterCallBack( GLFWwindow *window, int entered ) {
@@ -174,7 +167,7 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
         
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         cout << "Left Button Released " << endl;
-        cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
+        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
     }
 }
 
@@ -224,40 +217,716 @@ void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight) {
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-
-
-void drawGameBoards(int screenWidth, int screenHeight) {
-    drawBigSquares();
-    drawSmallSquares();
-}
-
-
-void drawRect(GLfloat allRectVertices[], Colors clr) {
+void drawShape(GLfloat allRectVertices[], Colors clr, unsigned int shapeType) {
     glEnableClientState( GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, allRectVertices);
     setColor(clr);
-    glDrawArrays(GL_POLYGON, 0, 4);
+    glDrawArrays(shapeType, 0, 4);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void saveBigSquareVertex(GLfloat x, GLfloat y, GLfloat z, int ind) {
-    squarePosition s;
-    s.xPos = x;
-    s.yPos = y;
-    s.zPos = 0;
-    bigSquarePositionV[ind].push_back(s);
+    Position pos;
+    pos.setCoord(x, y);
+    //bigSquarePositionV[ind].push_back(s); have to save coordinate of bigsquarePosition later
     return;
+}
+
+#pragma mark CreatePlayersAndTokens
+void createPlayersAndTokens() {
+    for (int i = 0; i < numberOfTotalPlayers; i++) {
+        int player_id =  i;
+        Player player = Player(player_id);
+        player.initializeTokenList();
+        playerCurrentlyPlayingList.push_back(player);
+    }
+    //cout << "liza" << endl;
+}
+
+void drawTokensForEachPlayer() {
+    
+}
+
+void drawGameBoards(int screenWidth, int screenHeight) {
+    drawBigSquares();
+    drawSmallSquares();
+    createPlayersAndTokens();
+    drawTokensForEachPlayer();
+}
+
+#pragma mark Display Small Square
+void renderSmallSquare( Position leftBottom, Position rightBottom, Position rightUpper, Position leftUpper, Colors clr) {
+    GLfloat allRectVertices[] = {
+        leftBottom.getxPos(), leftBottom.getyPos(), 0,
+        rightBottom.getxPos(), rightBottom.getyPos(), 0,
+        rightUpper.getxPos(), rightUpper.getyPos(), 0,
+        leftUpper.getxPos(), leftUpper.getyPos(), 0
+    };
+    if (clr == NONE) {
+        drawShape(allRectVertices, BLUE, GL_LINE_LOOP);
+    } else {
+        drawShape(allRectVertices, clr, GL_LINE_LOOP);
+    }
+}
+
+#pragma mark Save Small Square
+void makeAndStoreSquare(vector <Position> &posVect) {
+    Square sq = Square();
+    sq.setLeftBottomPos(posVect[0]);
+    sq.setRightBottomPos(posVect[1]);
+    sq.setRightUpperPos(posVect[2]);
+    sq.setLeftUpperPos(posVect[3]);
+    smallSquareSharedPositionVector.push_back(sq);
+}
+
+// can merge these two functions
+
+void makeAndStoreSquarePlyr(vector <Position> &posVect) {
+    Square sq = Square();
+    sq.setLeftBottomPos(posVect[0]);
+    sq.setRightBottomPos(posVect[1]);
+    sq.setRightUpperPos(posVect[2]);
+    sq.setLeftUpperPos(posVect[3]);
+    smallSquarePlayerSpecificVector.push_back(sq);
+}
+
+#pragma mark Build Cases
+
+void buildSmallSquaresForCase_0() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = 0;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_1() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = bigSquareLength;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos - (j+1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos - (j+1) * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_2() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos = 0;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength + smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int k = 0; k < 4; k++) {
+        Position pos;
+        if (k == 0) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if (k == 1) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if ( k == 2) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        } else if (k == 3) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        }
+        posVect.pb(pos);
+    }
+    makeAndStoreSquare(posVect);
+    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+}
+
+void buildSmallSquaresForCase_3() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength + 2 * smallSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = 0;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_4() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength + 3 * smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_5() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos = bigSquareLength + smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos =  bigSquareLength + 8 *  smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int k = 0; k < 4; k++) {
+        Position pos;
+        if (k == 0) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if (k == 1) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if ( k == 2) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        } else if (k == 3) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        }
+        posVect.pb(pos);
+    }
+    makeAndStoreSquare(posVect);
+    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+}
+
+void buildSmallSquaresForCase_6() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength + 2 * smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength + 8 *  smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength);
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos -  (j-1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos -  (j-1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_7() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength + 2 * smallSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = bigSquareLength + 3 * smallSquareLength;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_8() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos = bigSquareLength + 8 * smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength + smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int k = 0; k < 4; k++) {
+        Position pos;
+        if (k == 0) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if (k == 1) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if ( k == 2) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        } else if (k == 3) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        }
+        posVect.pb(pos);
+    }
+    makeAndStoreSquare(posVect);
+    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+}
+
+void buildSmallSquaresForCase_9() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = bigSquareLength + 8 * smallSquareLength;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos - (j - 1) * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos - (j - 1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_10() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength + 2 * smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength - smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength );
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos - (j-1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos - (j-1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        posVect.clear();
+    }
+}
+
+void buildSmallSquaresForCase_11() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos = bigSquareLength + smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = 0;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int k = 0; k < 4; k++) {
+        Position pos;
+        if (k == 0) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if (k == 1) {
+            pos = Position(xPosVector[k], startingYPos );
+        } else if ( k == 2) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        } else if (k == 3) {
+            pos = Position(xPosVector[k], startingYPos + smallSquareLength );
+        }
+        posVect.pb(pos);
+    }
+    makeAndStoreSquare(posVect);
+    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+}
+
+
+void buildSmallSqrPlayer_0() {
+   
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength + smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = 0;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos + j * smallSquareLength );
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos + (j+1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquarePlyr(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
+        posVect.clear();
+    }
+    //smallSquarePlayerSpecificVector
+}
+
+void buildSmallSqrPlayer_1() {
+    
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength + smallSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = 0;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos + (j+1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos + j * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
+        posVect.clear();
+    }
+}
+
+void buildSmallSqrPlayer_2() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingXPos =  bigSquareLength + smallSquareLength;
+    startingXPos2 = startingXPos + smallSquareLength;
+    startingYPos = bigSquareLength + 8 *  smallSquareLength;
+    
+    xPosVector.pb(startingXPos);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos2);
+    xPosVector.pb(startingXPos);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength );
+            } else if (k == 1) {
+                pos = Position(xPosVector[k], startingYPos - j * smallSquareLength);
+            } else if ( k == 2) {
+                pos = Position(xPosVector[k], startingYPos -  (j-1) * smallSquareLength );
+            } else if (k == 3) {
+                pos = Position(xPosVector[k], startingYPos -  (j-1) * smallSquareLength );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
+        posVect.clear();
+    }
+}
+
+void buildSmallSqrPlayer_3() {
+    vector <GLfloat> xPosVector;
+    vector <GLfloat> yPosVector;
+    vector <Position> posVect;
+    GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
+    
+    startingYPos = bigSquareLength + smallSquareLength;
+    startingYPos2 = startingYPos + smallSquareLength;
+    startingXPos = bigSquareLength + 8 * smallSquareLength;
+    
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos);
+    yPosVector.pb(startingYPos2);
+    yPosVector.pb(startingYPos2);
+    
+    for (int j = 0; j < 6; j++) {
+        for (int k = 0; k < 4; k++) {
+            Position pos;
+            if (k == 0) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            } else if (k == 1) {
+                pos = Position( startingXPos - (j - 1) * smallSquareLength, yPosVector[k] );
+            } else if ( k == 2) {
+                pos = Position( startingXPos - (j - 1) * smallSquareLength, yPosVector[k] );
+            } else if (k == 3) {
+                pos = Position( startingXPos - j * smallSquareLength, yPosVector[k] );
+            }
+            posVect.pb(pos);
+        }
+        makeAndStoreSquare(posVect);
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
+        posVect.clear();
+    }
 }
 
 void drawSmallSquares() {
     
+    for (int i = 0; i < 12 ; i++) {
+        
+        switch (i) {
+            case 0: {
+                buildSmallSquaresForCase_0();
+                break;
+            }
+            case 1: {
+                buildSmallSquaresForCase_1();
+                break;
+            }
+            case 2: {
+                buildSmallSquaresForCase_2();
+                break;
+            }
+            case 3: {
+                buildSmallSquaresForCase_3();
+                break;
+            }
+            case 4: {
+                buildSmallSquaresForCase_4();
+                break;
+            }
+            case 5: {
+                buildSmallSquaresForCase_5();
+                break;
+            }
+            case 6: {
+                buildSmallSquaresForCase_6();
+                break;
+            }
+            case 7: {
+                buildSmallSquaresForCase_7();
+                break;
+            }
+            case 8: {
+                buildSmallSquaresForCase_8();
+                break;
+            }
+            case 9: {
+                buildSmallSquaresForCase_9();
+                break;
+            }
+            case 10: {
+                buildSmallSquaresForCase_10();
+                break;
+            }
+            case 11: {
+                buildSmallSquaresForCase_11();
+                break;
+            }
+                
+            default:
+                break;
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        
+        switch (i) {
+            case 0:
+                buildSmallSqrPlayer_0();
+                break;
+            case 1:
+                buildSmallSqrPlayer_1();
+                break;
+            case 2:
+                buildSmallSqrPlayer_2();
+                break;
+            case 3:
+                buildSmallSqrPlayer_3();
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void drawBigSquares() {
-    
     for (int i = 0; i < numberOfBigSquare; i++) {
         if (i == 0) {
-            saveBigSquareVertex(0,0,0, i);
+            saveBigSquareVertex(0, 0, 0, i);
             saveBigSquareVertex(bigSquareLength, 0, 0, i);
             saveBigSquareVertex(bigSquareLength, bigSquareLength, 0, i);
             saveBigSquareVertex(0, bigSquareLength, 0, i);
@@ -268,7 +937,7 @@ void drawBigSquares() {
                 bigSquareLength, bigSquareLength, 0,
                 0, bigSquareLength, 0
             };
-            drawRect(allRectVertices, GREEN);
+            drawShape(allRectVertices, GREEN, GL_POLYGON);
         } else if( i == 1) {
             
             saveBigSquareVertex(0, (bigSquareLength + 3 * smallSquareLength), 0, i);
@@ -281,9 +950,8 @@ void drawBigSquares() {
                 bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0,
                 bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0,
                 0, (2 * bigSquareLength + 3 * smallSquareLength), 0,
-                
             };
-            drawRect(allRectVertices, YELLOW);
+            drawShape(allRectVertices, YELLOW, GL_POLYGON);
         } else if( i == 2) {
             
             saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
@@ -296,9 +964,8 @@ void drawBigSquares() {
                 (2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
                 (2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
                 (bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
-                
             };
-            drawRect(allRectVertices, BLUE);
+            drawShape(allRectVertices, CYAN, GL_POLYGON);
         }
         else if( i == 3) {
             
@@ -314,11 +981,10 @@ void drawBigSquares() {
                 (bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
                 
             };
-            drawRect(allRectVertices, RED);
+            drawShape(allRectVertices, RED, GL_POLYGON);
         }
     }
 }
-
 
 
 #pragma mark Initialize
@@ -358,40 +1024,4 @@ int initialize_window() {
     glLoadIdentity();
     return 0;
 }
-
-
-
-
-#pragma mark Other_Unnecessary_Codes
-
-//        glBegin (GL_POINTS);
-//        glVertex3fv(allCircleVertices);
-//        glEnd ();
-
-
-
-
-//    GLfloat vertices[] = { // top left corner
-//        halfScreenWidth, halfScreenHeight + halfSideLength, 0.0, // top center vertex
-//        halfScreenWidth - halfSideLength, halfScreenHeight - halfSideLength, 0.0, // bottom left corner
-//        halfScreenWidth + halfSideLength, halfScreenHeight - halfSideLength, 0.0 // bottom right corner
-//    };
-
-
-/* draw Triangles */
-// glVertexPointer(3, GL_FLOAT, 0, vertices); // Point to the vertices to be used
-
-
-
-//glBegin (GL_TRIANGLES);
-//setColor(WHITE);  /* the current RGB color is red: */
-//glVertex3fv(vertices);
-//glEnd ();
-//glColorPointer(3, GL_FLOAT, 0, colour);
-//glDrawArrays(GL_TRIANGLES, 0, 3);//draw the vertices
-//glDisableClientState(GL_COLOR_ARRAY);
-
-
-//glEnableClientState(GL_VERTEX_ARRAY); // tell opengl that you are using a vertex array for fixed-funtion attribute
-//glDisableClientState(GL_VERTEX_ARRAY);//tell Opengl that you are finished using the vertex array attribute
 

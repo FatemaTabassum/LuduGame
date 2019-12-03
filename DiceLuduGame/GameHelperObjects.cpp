@@ -7,53 +7,56 @@
 //
 
 #include <stdio.h>
+#include <iostream>
+#include <vector>
 
+using namespace std;
 
 enum Colors {
     RED,
     GREEN,
     BLUE,
     YELLOW,
-    WHITE
+    WHITE,
+    PURPLE,
+    CYAN,
+    DARKGREEN,
+    NONE
 };
 
+//0.0 0.5 0.0 dark green
+//0.0 1.0 1.0 cyan
+//1.0 0.0 1.0 purple
 
-class Position
-{
+class Position {
 private:
-    int x,y;
-    
+    //float xPos2;
+    float xPos;
+    float yPos;
+    float zPos = 0;
 public:
-    void setcoord(int x,int y){ // set coordinate
-        this->x=x;
-        this->y=y;
+    Position() {
+        
     }
-    void display(int b) {
-        printf("Liza int b = %d\n", b);
+    Position(float x, float y) {
+        xPos = x;
+        yPos = y;
+        zPos = 0;
     }
-    
-    //    void display(int b){
-    //        setcolor(15);
-    //        circle(x,y,10);
-    //        if(b==1){
-    //            setfillstyle(SOLID_FILL,RED);
-    //            floodfill(x,y,15);
-    //        }
-    //        if(b==2){
-    //            setfillstyle(SOLID_FILL,YELLOW);
-    //            floodfill(x,y,15);
-    //        }
-    //        if(b==3){
-    //            setfillstyle(SOLID_FILL,GREEN);
-    //            floodfill(x,y,15);
-    //        }
-    //        if(b==4){
-    //            setfillstyle(SOLID_FILL,BLUE);
-    //            floodfill(x,y,15);
-    //        }
-    //    }
+    void setCoord(float x,float y){ // set coordinate
+        xPos = x;
+        xPos = y;
+    }
+    void display() {
+        cout << " xPos " << xPos << " yPos " << yPos << endl;
+    }
+    float getxPos() {
+        return this->xPos;
+    }
+    float getyPos() {
+        return this->yPos;
+    }
 };
-
 
 
 class Token {
@@ -63,6 +66,18 @@ private:
     bool isHome;
     
 public:
+    Token() {
+        
+    }
+    Token(unsigned int token_id) {
+        this->token_id = token_id;
+        this->isHome = true;
+    }
+    Token (Position pos, unsigned int token_id, bool isHome ) {
+        this->pos = pos;
+        this->token_id = token_id;
+        this->isHome = isHome;
+    }
     void setPos(Position pos) {
         this->pos = pos;
     }
@@ -78,13 +93,20 @@ public:
     void setIsHome(bool isHome) {
         this->isHome = isHome;
     }
+    Position getPos() {
+        return  this->pos;
+    }
+    unsigned int getToken_id() {
+        return  token_id;
+    }
 };
 
 
-class Player{
+class Player {
 private:
+    unsigned int player_id;
     Position pos;
-    Token token;
+    vector< Token > tokenList;
     //player has attribute of type class Position
     
 public:
@@ -93,23 +115,88 @@ public:
     int homeway;
     Colors color;
     
-    Player(){
-        status=0;
-        homeway=0;
+    Player() {
+        
     }
-    void setPosition(int pindex,Position p){
+    Player(unsigned int player_id) {
+        this->player_id = player_id;
+    }
+    Player(Position p) {
+        pos = pos;
+        posindex = 0;
+        status = 0;
+        homeway = 0;
+    }
+    void setPosition(int pindex,Position p) {
         posindex=pindex;
         pos=p;
     }
-    void setToken(Token token) {
-        this->token = token;
-    }
     void setColor(Colors color) {
         this->color = color;
+    }
+//    void addTokenToTokenList(int token_id) {
+//        Token tok = Token(token_id);
+//        this->tokenList.push_back(tok);
+//    }
+//    void removeTokenFromTokenList(int token_id) {
+//
+//    }
+    void initializeTokenList() {
+        int totalTok = 4;
+        for (int i = 0; i < totalTok; i++) {
+            Token tok = Token(i);
+            this->tokenList.push_back(tok);
+        }
     }
 //    void display(int b){
 //        pos.display(b);
 //    }
 };
 
+class Square {
+private:
+    Position leftBottomPos;
+    Position rightBottomPos;
+    Position leftUpperPos;
+    Position rightUpperPos;
+    std::vector <Player> playerList;
+    
+public:
+    bool isEmpty = true;
+    Square() {
+    }
+    void setLeftBottomPos(Position pos) {
+        this->leftBottomPos = Position(pos.getxPos(), pos.getyPos());
+        
+    }
+    void setRightBottomPos(Position pos) {
+        this->rightBottomPos = Position(pos.getxPos(), pos.getyPos());
+    }
+    void setLeftUpperPos(Position pos) {
+        this->leftUpperPos = Position(pos.getxPos(), pos.getyPos());
+    }
+    void setRightUpperPos(Position pos) {
+        this->rightUpperPos = Position(pos.getxPos(), pos.getyPos());
+    }
+    Position getLeftBottomPos() {
+        return this->leftBottomPos;
+    }
+    Position getRightBottomPos() {
+        return this->rightBottomPos;
+    }
+    Position getLeftUpperPos() {
+        return this->leftUpperPos;
+    }
+    Position getRightUpperPos() {
+        return this->rightUpperPos;
+    }
+    void addPlayerToPlayerList(Player player) {
+        this->playerList.push_back(player);
+    }
+    
+    void removePlayerFromPlayerList(Player player) {
+        //this->playerList.;
+    }
+    
+};
 
