@@ -56,7 +56,7 @@ Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
 
 vector <Square> smallSquareSharedPositionVector;
 vector <Square> smallSquarePlayerSpecificVector;
-vector <Square> bigSquarePositionV[4];
+vector <Square> bigSquareVector;
 
 
 /*********** Function Prototype **********/
@@ -126,10 +126,13 @@ void setColor(Colors clr) {
             glColor3f (1.0, 0.0, 1.0 );  /* the current RGB color is PURPLE: */
             break;
         case CYAN:
-            glColor3f (0.0, 1.0, 1.0 );  /* the current RGB color is PURPLE: */
+            glColor3f (0.0, 1.0, 1.0 );  /* the current RGB color is CYAN: */
             break;
         case DARKGREEN:
-            glColor3f (0.0, 0.5, 0.0 );  /* the current RGB color is PURPLE: */
+            glColor3f (0.0, 0.5, 0.0 );  /* the current RGB color is DARKGREEN: */
+            break;
+        case BLACK:
+            glColor3f (0.0, 0.0, 0.0 );  /* the current RGB color is BLACK: */
             break;
         default:
             break;
@@ -245,6 +248,11 @@ void createPlayersAndTokens() {
 
 void drawTokensForEachPlayer() {
     
+    //drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36);
+    
+    int rectWidth = bigSquareLength - 20;
+    int circleWidth = (rectWidth/2) - 20;
+    
 }
 
 void drawGameBoards(int screenWidth, int screenHeight) {
@@ -269,8 +277,35 @@ void renderSmallSquare( Position leftBottom, Position rightBottom, Position righ
     }
 }
 
+#pragma mark Display Big Square
+void renderBigSquare( Position leftBottom, Position rightBottom, Position rightUpper, Position leftUpper, Colors clr) {
+    GLfloat allRectVertices[] = {
+        leftBottom.getxPos(), leftBottom.getyPos(), 0,
+        rightBottom.getxPos(), rightBottom.getyPos(), 0,
+        rightUpper.getxPos(), rightUpper.getyPos(), 0,
+        leftUpper.getxPos(), leftUpper.getyPos(), 0
+    };
+    drawShape(allRectVertices, clr, GL_POLYGON);
+}
+
+
+#pragma mark Save Big Square
+void makeAndStoreBigSquare(vector <Position> &posVect) {
+    Square sq = Square();
+    sq.setLeftBottomPos(posVect[0]);
+    sq.setRightBottomPos(posVect[1]);
+    sq.setRightUpperPos(posVect[2]);
+    sq.setLeftUpperPos(posVect[3]);
+#warning have to calculate
+//    float abs = fabs(posVect[0] - posVect[1]);
+//    sq.setSquareWidth(abs);
+//    sq.setSquareHeight(abs);
+    bigSquareVector.push_back(sq);
+}
+
+
 #pragma mark Save Small Square
-void makeAndStoreSquare(vector <Position> &posVect) {
+void makeAndStoreShareSquare(vector <Position> &posVect) {
     Square sq = Square();
     sq.setLeftBottomPos(posVect[0]);
     sq.setRightBottomPos(posVect[1]);
@@ -281,7 +316,7 @@ void makeAndStoreSquare(vector <Position> &posVect) {
 
 // can merge these two functions
 
-void makeAndStoreSquarePlyr(vector <Position> &posVect) {
+void makeAndStoreShareSquarePlyr(vector <Position> &posVect) {
     Square sq = Square();
     sq.setLeftBottomPos(posVect[0]);
     sq.setRightBottomPos(posVect[1]);
@@ -321,7 +356,7 @@ void buildSmallSquaresForCase_0() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -356,7 +391,7 @@ void buildSmallSquaresForCase_1() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -390,7 +425,7 @@ void buildSmallSquaresForCase_2() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSquare(posVect);
+    makeAndStoreShareSquare(posVect);
     renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
 }
 
@@ -423,7 +458,7 @@ void buildSmallSquaresForCase_3() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -458,7 +493,7 @@ void buildSmallSquaresForCase_4() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -492,7 +527,7 @@ void buildSmallSquaresForCase_5() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSquare(posVect);
+    makeAndStoreShareSquare(posVect);
     renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
 }
 
@@ -525,7 +560,7 @@ void buildSmallSquaresForCase_6() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -560,7 +595,7 @@ void buildSmallSquaresForCase_7() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -594,7 +629,7 @@ void buildSmallSquaresForCase_8() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSquare(posVect);
+    makeAndStoreShareSquare(posVect);
     renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
 }
 
@@ -627,7 +662,7 @@ void buildSmallSquaresForCase_9() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -662,7 +697,7 @@ void buildSmallSquaresForCase_10() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
         posVect.clear();
     }
@@ -696,7 +731,7 @@ void buildSmallSquaresForCase_11() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSquare(posVect);
+    makeAndStoreShareSquare(posVect);
     renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
 }
 
@@ -731,7 +766,7 @@ void buildSmallSqrPlayer_0() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquarePlyr(posVect);
+        makeAndStoreShareSquarePlyr(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
         posVect.clear();
     }
@@ -768,7 +803,7 @@ void buildSmallSqrPlayer_1() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
         posVect.clear();
     }
@@ -803,7 +838,7 @@ void buildSmallSqrPlayer_2() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
         posVect.clear();
     }
@@ -838,7 +873,7 @@ void buildSmallSqrPlayer_3() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSquare(posVect);
+        makeAndStoreShareSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
         posVect.clear();
     }
@@ -926,62 +961,111 @@ void drawSmallSquares() {
 void drawBigSquares() {
     for (int i = 0; i < numberOfBigSquare; i++) {
         if (i == 0) {
-            saveBigSquareVertex(0, 0, 0, i);
-            saveBigSquareVertex(bigSquareLength, 0, 0, i);
-            saveBigSquareVertex(bigSquareLength, bigSquareLength, 0, i);
-            saveBigSquareVertex(0, bigSquareLength, 0, i);
+//            saveBigSquareVertex(0, 0, 0, i);
+//            saveBigSquareVertex(bigSquareLength, 0, 0, i);
+//            saveBigSquareVertex(bigSquareLength, bigSquareLength, 0, i);
+//            saveBigSquareVertex(0, bigSquareLength, 0, i);
             
-            GLfloat allRectVertices[] = {
-                0, 0, 0,
-                bigSquareLength, 0, 0,
-                bigSquareLength, bigSquareLength, 0,
-                0, bigSquareLength, 0
-            };
-            drawShape(allRectVertices, GREEN, GL_POLYGON);
+            
+            vector <Position> posVect;
+            posVect.pb(Position(0, 0));
+            posVect.pb(Position(bigSquareLength, 0));
+            posVect.pb(Position(bigSquareLength, bigSquareLength));
+            posVect.pb(Position(0, bigSquareLength));
+            makeAndStoreBigSquare(posVect);
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            
+//            GLfloat allRectVertices[] = {
+//                0, 0, 0,
+//                bigSquareLength, 0, 0,
+//                bigSquareLength, bigSquareLength, 0,
+//                0, bigSquareLength, 0
+//            };
+            //drawShape(allRectVertices, GREEN, GL_POLYGON);
         } else if( i == 1) {
             
-            saveBigSquareVertex(0, (bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex(bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex(0, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex(0, (bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex(bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex(0, (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
             
-            GLfloat allRectVertices[] = {
-                0, (bigSquareLength + 3 * smallSquareLength), 0,
-                bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0,
-                bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0,
-                0, (2 * bigSquareLength + 3 * smallSquareLength), 0,
-            };
-            drawShape(allRectVertices, YELLOW, GL_POLYGON);
+            
+            
+            vector <Position> posVect;
+            posVect.pb(Position(0, (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(bigSquareLength, (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(0, (2 * bigSquareLength + 3 * smallSquareLength)));
+            makeAndStoreBigSquare(posVect);
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            
+            
+//            GLfloat allRectVertices[] = {
+//                0, (bigSquareLength + 3 * smallSquareLength), 0,
+//                bigSquareLength, (bigSquareLength + 3 * smallSquareLength), 0,
+//                bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength), 0,
+//                0, (2 * bigSquareLength + 3 * smallSquareLength), 0,
+//            };
+//            drawShape(allRectVertices, YELLOW, GL_POLYGON);
         } else if( i == 2) {
             
-            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
-            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+//            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0, i);
+//
+//
             
-            GLfloat allRectVertices[] = {
-                (bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
-                (2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
-                (2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
-                (bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
-            };
-            drawShape(allRectVertices, CYAN, GL_POLYGON);
+            vector <Position> posVect;
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
+            makeAndStoreBigSquare(posVect);
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            
+            
+            
+//
+//            GLfloat allRectVertices[] = {
+//                (bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
+//                (2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength), 0,
+//                (2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
+//                (bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength), 0,
+//            };
+//            drawShape(allRectVertices, CYAN, GL_POLYGON);
         }
         else if( i == 3) {
             
-            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), 0, 0, i);
-            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), 0, 0, i);
-            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
-            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
+//            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), 0, 0, i);
+//            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), 0, 0, i);
+//            saveBigSquareVertex((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
+//            saveBigSquareVertex((bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0, i);
+//            
+//            
+//            
             
-            GLfloat allRectVertices[] = {
-                (bigSquareLength + 3 * smallSquareLength), 0, 0,
-                (2 * bigSquareLength + 3 * smallSquareLength), 0, 0,
-                (2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
-                (bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
-                
-            };
-            drawShape(allRectVertices, RED, GL_POLYGON);
+            
+            vector <Position> posVect;
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), 0));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), 0));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength));
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), bigSquareLength));
+            makeAndStoreBigSquare(posVect);
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            
+            
+            
+            
+            
+//            GLfloat allRectVertices[] = {
+//                (bigSquareLength + 3 * smallSquareLength), 0, 0,
+//                (2 * bigSquareLength + 3 * smallSquareLength), 0, 0,
+//                (2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
+//                (bigSquareLength + 3 * smallSquareLength), bigSquareLength, 0,
+//
+//            };
+//            drawShape(allRectVertices, RED, GL_POLYGON);
         }
     }
 }

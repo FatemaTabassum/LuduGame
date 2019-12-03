@@ -13,14 +13,15 @@
 using namespace std;
 
 enum Colors {
-    RED,
-    GREEN,
-    BLUE,
-    YELLOW,
-    WHITE,
-    PURPLE,
-    CYAN,
-    DARKGREEN,
+    RED, // used as big square
+    GREEN, // used as big square
+    BLUE, // used as drawlines
+    YELLOW, // used as big square
+    WHITE, // can be used as token
+    PURPLE, // can be used as token
+    CYAN, // used as big square
+    DARKGREEN, // can be used as token
+    BLACK, //// can be used as token
     NONE
 };
 
@@ -160,6 +161,8 @@ private:
     Position leftUpperPos;
     Position rightUpperPos;
     std::vector <Player> playerList;
+    float squareWidth;
+    float squareHeight;
     
 public:
     bool isEmpty = true;
@@ -177,6 +180,13 @@ public:
     }
     void setRightUpperPos(Position pos) {
         this->rightUpperPos = Position(pos.getxPos(), pos.getyPos());
+    }
+    void setSquareWidth(float w) {
+        this->squareWidth = w;
+    }
+    
+    void setSquareHeight(float h) {
+        this->squareHeight = h;
     }
     Position getLeftBottomPos() {
         return this->leftBottomPos;
