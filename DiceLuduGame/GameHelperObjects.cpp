@@ -21,7 +21,7 @@ enum Colors {
     PURPLE, // can be used as token
     CYAN, // used as big square
     DARKGREEN, // can be used as token
-    BLACK, //// can be used as token
+    BLACK, // can be used as token
     NONE
 };
 
@@ -142,6 +142,9 @@ public:
 //    void removeTokenFromTokenList(int token_id) {
 //
 //    }
+    unsigned int getPlayer_id() {
+        return this->player_id;
+    }
     void initializeTokenList() {
         int totalTok = 4;
         for (int i = 0; i < totalTok; i++) {
@@ -163,6 +166,8 @@ private:
     std::vector <Player> playerList;
     float squareWidth;
     float squareHeight;
+    float midX;
+    float midY;
     
 public:
     bool isEmpty = true;
@@ -206,6 +211,18 @@ public:
     
     void removePlayerFromPlayerList(Player player) {
         //this->playerList.;
+    }
+    void setMidX(float x) {
+        this->midX = x;
+    }
+    void setMidY(float x) {
+        this->midY = x;
+    }
+    float getmidX() {
+        return this->midX;
+    }
+    float getmidY() {
+        return this->midY;
     }
     
 };

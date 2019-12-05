@@ -18,6 +18,7 @@ using namespace std;
 
 /************* Macros *************/
 
+//#define TOTAL_SCREEN_WIDTH 650
 #define SCREEN_WIDTH 570 // must be a divisor of 15
 #define SCREEN_HEIGHT SCREEN_WIDTH // height is equal to width
 #define DIVIDER_CONSTANT 15 // 35 * 6 // a = 6b, 2a + 3b = width, 12b + 3b = width, 15b = width, width = height
@@ -47,12 +48,15 @@ const GLfloat halfSideLength = 200;
 const GLfloat smallSquareLength = SCREEN_WIDTH / DIVIDER_CONSTANT;
 const GLfloat bigSquareLength = smallSquareLength * 6;
 const GLfloat numberOfBigSquare = 4;
-int screenWidth, screenHeight;
+int screenWidth, screenHeight, gameScreenWidth, gameScreenheight;
 Position currentMousePos;
 int numberOfTotalPlayers = 4;
+float radius = 20;
 vector <Player> playerCurrentlyPlayingList;
+float cursorPosX, cursorPosY;
 
 Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
+Colors playerTokenColor[] = {WHITE, PURPLE, DARKGREEN, BLACK};
 
 vector <Square> smallSquareSharedPositionVector;
 vector <Square> smallSquarePlayerSpecificVector;
@@ -61,7 +65,7 @@ vector <Square> bigSquareVector;
 
 /*********** Function Prototype **********/
 #pragma mark Functions Prototype
-void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOfSides );
+void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOfSides, unsigned int playerId);
 int initialize_window();
 void render_opengl();
 void setColor(Colors clr);
@@ -73,6 +77,7 @@ void addBackgroundAestheticWithFrame( int screenWidth,  int screenHeight);
 void drawGameBoards(int screenWidth, int screenHeight);
 void drawSmallSquares();
 void drawBigSquares();
+void removeCurrentCircle();
 
 #pragma mark Main
 int main(void) {
@@ -91,7 +96,7 @@ void render_opengl() {
         addBackgroundAestheticWithFrame(screenWidth, screenHeight);
         //Render opengl here
         drawGameBoards(screenWidth, screenHeight);
-        drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36);
+        //drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36, NONE);
         
         
         //Swap front and back buffers
@@ -149,6 +154,8 @@ void addEventToTheScreen() {
 }
 static void cursorPositionCallBack(GLFWwindow *window, double xPos, double yPos) {
     cout << xPos << "   " << yPos << endl;
+    cursorPosX = xPos;
+    cursorPosY = yPos;
     currentMousePos.setCoord(xPos, yPos);
 }
 
@@ -160,6 +167,12 @@ static void cursorPositionCallBack(GLFWwindow *window, double xPos, double yPos)
 ////    }
 //}
 
+
+void convertPosition(float x, float y) {
+    float cursorPosX = x;
+    float cursorPosY = y;
+}
+
 void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
         cout << "Right button Pressed " << endl;
@@ -167,7 +180,8 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
         cout << "Right Button Released " << endl;
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         cout << "Left Button Pressed " << endl;
-        
+        convertPosition(cursorPosX, cursorPosY);
+        removeCurrentCircle();
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         cout << "Left Button Released " << endl;
         //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
@@ -175,7 +189,7 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
 }
 
 #pragma mark Draw
-void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOfSides ) {
+void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOfSides, unsigned int playerId ) {
     GLint numberOfVertices = numberOfSides + 1;
     GLfloat doublePi = 2.0f * M_PI;
     vector<GLfloat>circleVerticesX;
@@ -193,16 +207,31 @@ void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOf
         allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
         allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
     }
+    
+    int i;
+    int triangleAmount = 1000;
+    GLfloat twicePi = 2.0f * 3.1415;
+    glEnable(GL_LINE_SMOOTH);
+    
+    setColor(playerTokenColor[playerId]);
+    glLineWidth(5.0);
+    
+    glBegin(GL_LINES);
+    setColor(playerTokenColor[playerId]);
+    //glColor4f(1.0, 0.0, 0.0, 1.0);
+    for(i = 0; i < triangleAmount; i++)
+    {
+        glVertex2f( x, y);
+        glVertex2f(x + (radius * cos(i * twicePi / triangleAmount)), y + (radius * sin(i * twicePi / triangleAmount)));
+    }
+    glEnd();
+    
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer(3, GL_FLOAT, 0, allCircleVertices);
-    setColor(RED);
+    setColor(playerTokenColor[(playerId+1)%4]);
     glDrawArrays(GL_LINE_STRIP, 0, numberOfVertices);
     glDisableClientState(GL_VERTEX_ARRAY);
-    
-    
 }
-
-
 
 void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight) {
     GLfloat x = (GLfloat)screenWidth;
@@ -253,6 +282,21 @@ void drawTokensForEachPlayer() {
     int rectWidth = bigSquareLength - 20;
     int circleWidth = (rectWidth/2) - 20;
     
+    for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
+        Square sq = bigSquareVector[i];
+        Player player = playerCurrentlyPlayingList[i];
+        drawCircle(sq.getmidX(), sq.getmidY(), 0, radius, 36, player.getPlayer_id());
+    }
+}
+
+/************** I coded this method for Testing only to examine the move. havent implemented it yet ***********/
+void drawTokensForTesting() {
+//    for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
+//        int startIndexForPlayer =
+//    }
+    float midX = smallSquareSharedPositionVector[1].getmidX();
+    float midY = smallSquareSharedPositionVector[1].getmidY();
+    drawCircle(midX, midY, 0, radius, 36, 0);
 }
 
 void drawGameBoards(int screenWidth, int screenHeight) {
@@ -260,6 +304,7 @@ void drawGameBoards(int screenWidth, int screenHeight) {
     drawSmallSquares();
     createPlayersAndTokens();
     drawTokensForEachPlayer();
+    drawTokensForTesting();
 }
 
 #pragma mark Display Small Square
@@ -289,14 +334,19 @@ void renderBigSquare( Position leftBottom, Position rightBottom, Position rightU
 }
 
 
-#pragma mark Save Big Square
+#pragma mark Save Big Square..can make these methods into one method
 void makeAndStoreBigSquare(vector <Position> &posVect) {
     Square sq = Square();
     sq.setLeftBottomPos(posVect[0]);
     sq.setRightBottomPos(posVect[1]);
     sq.setRightUpperPos(posVect[2]);
     sq.setLeftUpperPos(posVect[3]);
-#warning have to calculate
+    GLfloat midx = posVect[0].getxPos() + bigSquareLength/2;
+    GLfloat midy = posVect[0].getyPos() + bigSquareLength/2;
+    sq.setMidX(midx);
+    sq.setMidY(midy);
+    
+#warning have to calculate or may be not
 //    float abs = fabs(posVect[0] - posVect[1]);
 //    sq.setSquareWidth(abs);
 //    sq.setSquareHeight(abs);
@@ -311,6 +361,10 @@ void makeAndStoreShareSquare(vector <Position> &posVect) {
     sq.setRightBottomPos(posVect[1]);
     sq.setRightUpperPos(posVect[2]);
     sq.setLeftUpperPos(posVect[3]);
+    GLfloat midx = posVect[0].getxPos() + smallSquareLength/2;
+    GLfloat midy = posVect[0].getyPos() + smallSquareLength/2;
+    sq.setMidX(midx);
+    sq.setMidY(midy);
     smallSquareSharedPositionVector.push_back(sq);
 }
 
@@ -322,6 +376,11 @@ void makeAndStoreShareSquarePlyr(vector <Position> &posVect) {
     sq.setRightBottomPos(posVect[1]);
     sq.setRightUpperPos(posVect[2]);
     sq.setLeftUpperPos(posVect[3]);
+    
+    GLfloat midx = posVect[0].getxPos() + smallSquareLength/2;
+    GLfloat midy = posVect[0].getyPos() + smallSquareLength/2;
+    sq.setMidX(midx);
+    sq.setMidY(midy);
     smallSquarePlayerSpecificVector.push_back(sq);
 }
 
@@ -1070,6 +1129,15 @@ void drawBigSquares() {
     }
 }
 
+#pragma mark simulate game
+void simulate_game(){
+    for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
+        int rnd = rand() % 6 + 1;
+        if (rnd == 6) {
+            
+        }
+    }
+}
 
 #pragma mark Initialize
 int initialize_window() {
