@@ -49,7 +49,7 @@ private:
     Position pos;
     unsigned int token_id;
     bool isHome;
-    
+    Colors tokenColor;
 public:
     Token();
     Token(unsigned int token_id);
@@ -60,6 +60,8 @@ public:
     bool getIsHome();
     void setIsHome(bool isHome);
     Position getPos();
+    void setTokenColor(Colors color);
+    Colors  getTokenColor();
     unsigned int getToken_id();
 };
 
@@ -83,7 +85,8 @@ public:
     void setPosition(int pindex,Position p);
     void setColor(Colors color);
     unsigned int getPlayer_id();
-    void initializeTokenList();
+    void initializeTokenList(Colors tokenColor);
+    vector<Token> getTokenList();
 };
 
 class Square {

@@ -15,64 +15,70 @@ using namespace std;
 
 
 Position::Position() {
-        
-    }
+    
+}
 Position::Position(float x, float y) {
-        xPos = x;
-        yPos = y;
-        zPos = 0;
-    }
+    xPos = x;
+    yPos = y;
+    zPos = 0;
+}
 void Position::setCoord(float x,float y){ // set coordinate
-        xPos = x;
-        xPos = y;
-    }
+    xPos = x;
+    yPos = y;
+}
 void Position::display() {
-        cout << " xPos " << xPos << " yPos " << yPos << endl;
-    }
+    cout << " xPos " << xPos << " yPos " << yPos << endl;
+}
 float Position::getxPos() {
-        return this->xPos;
-    }
+    return this->xPos;
+}
 float Position:: getyPos() {
-        return this->yPos;
-    }
+    return this->yPos;
+}
 
 
 
 
 Token::Token() {
-        
-    }
+    
+}
 Token::Token(unsigned int token_id) {
-        this->token_id = token_id;
-        this->isHome = true;
-    }
+    this->token_id = token_id;
+    this->isHome = true;
+}
 Token::Token (Position pos, unsigned int token_id, bool isHome ) {
-        this->pos = pos;
-        this->token_id = token_id;
-        this->isHome = isHome;
-    }
+    this->pos = pos;
+    this->token_id = token_id;
+    this->isHome = isHome;
+}
 void Token::setPos(Position pos) {
-        this->pos = pos;
-    }
+    this->pos = pos;
+}
 void Token::setTokenId(unsigned int id) {
-        this->token_id = id;
-    }
+    this->token_id = id;
+}
 unsigned int Token::getTokenId() {
-        return this->token_id;
-    }
+    return this->token_id;
+}
 bool Token::getIsHome() {
-        return isHome;
-    }
+    return isHome;
+}
 void Token::setIsHome(bool isHome) {
-        this->isHome = isHome;
-    }
+    this->isHome = isHome;
+}
 Position Token::getPos() {
-        return  this->pos;
-    }
+    return  this->pos;
+}
 unsigned int Token::getToken_id() {
-        return  token_id;
-    }
+    return  token_id;
+}
 
+void Token::setTokenColor(Colors color){
+    this->tokenColor = color;
+}
+Colors  Token::getTokenColor() {
+    return this->tokenColor;
+}
 
 //class Player {
 //private:
@@ -88,87 +94,94 @@ unsigned int Token::getToken_id() {
 //    Colors color;
 
 Player::Player() {
-        
-    }
+    
+}
 Player::Player(unsigned int player_id) {
-        this->player_id = player_id;
-    }
+    this->player_id = player_id;
+}
 Player::Player(Position p) {
-        pos = pos;
-        posindex = 0;
-        status = 0;
-        homeway = 0;
-    }
+    pos = pos;
+    posindex = 0;
+    status = 0;
+    homeway = 0;
+}
 void Player:: setPosition(int pindex,Position p) {
-        posindex=pindex;
-        pos=p;
-    }
+    posindex=pindex;
+    pos=p;
+}
 void Player:: setColor(Colors color) {
-        this->color = color;
-    }
+    this->color = color;
+}
 unsigned int Player:: getPlayer_id() {
-        return this->player_id;
+    return this->player_id;
+}
+void Player:: initializeTokenList(Colors tokenColor) {
+    for (int i = 0; i < TOTAL_TOKEN; i++) {
+        Token tok = Token(i);
+        tok.setTokenColor(tokenColor);
+        //get it from big square
+        Position pos = Position(bigSquareLength/2, bigSquareLength/2);
+        tok.setPos(pos);
+        this->tokenList.push_back(tok);
     }
-void Player:: initializeTokenList() {
-        for (int i = 0; i < TOTAL_TOKEN; i++) {
-            Token tok = Token(i);
-            this->tokenList.push_back(tok);
-        }
-    }
+}
+vector<Token> Player::getTokenList() {
+    return this->tokenList;
+}
 
 
 
 Square::Square() {
-    }
+}
 void Square::setLeftBottomPos(Position pos) {
-        this->leftBottomPos = Position(pos.getxPos(), pos.getyPos());
-        
-    }
+    this->leftBottomPos = Position(pos.getxPos(), pos.getyPos());
+    
+}
 void Square:: setRightBottomPos(Position pos) {
-        this->rightBottomPos = Position(pos.getxPos(), pos.getyPos());
-    }
+    this->rightBottomPos = Position(pos.getxPos(), pos.getyPos());
+}
 void Square:: setLeftUpperPos(Position pos) {
-        this->leftUpperPos = Position(pos.getxPos(), pos.getyPos());
-    }
+    this->leftUpperPos = Position(pos.getxPos(), pos.getyPos());
+}
 void Square:: setRightUpperPos(Position pos) {
-        this->rightUpperPos = Position(pos.getxPos(), pos.getyPos());
-    }
+    this->rightUpperPos = Position(pos.getxPos(), pos.getyPos());
+}
 void Square:: setSquareWidth(float w) {
-        this->squareWidth = w;
-    }
-    
+    this->squareWidth = w;
+}
+
 void Square:: setSquareHeight(float h) {
-        this->squareHeight = h;
-    }
+    this->squareHeight = h;
+}
 Position Square:: getLeftBottomPos() {
-        return this->leftBottomPos;
-    }
+    return this->leftBottomPos;
+}
 Position Square:: getRightBottomPos() {
-        return this->rightBottomPos;
-    }
+    return this->rightBottomPos;
+}
 Position Square:: getLeftUpperPos() {
-        return this->leftUpperPos;
-    }
+    return this->leftUpperPos;
+}
 Position Square:: getRightUpperPos() {
-        return this->rightUpperPos;
-    }
+    return this->rightUpperPos;
+}
 void Square:: addPlayerToPlayerList(Player player) {
-        this->playerList.push_back(player);
-    }
-    
+    this->playerList.push_back(player);
+}
+
 void Square:: removePlayerFromPlayerList(Player player) {
-        //this->playerList.;
-    }
+    //this->playerList.;
+}
 void Square:: setMidX(float x) {
-        this->midX = x;
-    }
+    this->midX = x;
+}
 void Square:: setMidY(float x) {
-        this->midY = x;
-    }
+    this->midY = x;
+}
 float Square:: getmidX() {
-        return this->midX;
-    }
+    return this->midX;
+}
 float Square:: getmidY() {
-        return this->midY;
-    }
+    return this->midY;
+}
 

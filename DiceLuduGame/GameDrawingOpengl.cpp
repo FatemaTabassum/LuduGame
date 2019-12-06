@@ -7,9 +7,6 @@
 //
 
 #include "GameDrawingOpengl.hpp"
-
-
-
 /********* Global Variables **********/
 
 GLFWwindow *window;
@@ -21,14 +18,18 @@ const GLfloat bigSquareLength = smallSquareLength * 6;
 const GLfloat numberOfBigSquare = 4;
 int screenWidth, screenHeight, gameScreenWidth, gameScreenheight;
 Position currentMousePos;
-const int numberOfTotalPlayers = 4;
 const float radius = 20;
+int numberOfTotalPlayers = 4;
 vector <Player> playerCurrentlyPlayingList;
 float cursorPosX, cursorPosY;
-bool firstTimeFlag = true;
+bool firstTimeFlagSmallSharedSquare = true;
+bool firstTimeFlagBigSquare = true;
+bool firstTimeFlagPlayerSpecificSquare = true;
+int circleInWhichSquare=0;
+double timeStampInSec = 0.1;
 
 Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
-Colors playerTokenColor[] = {WHITE, PURPLE, DARKGREEN, BLACK};
+Colors playerTokenColor[] = {DARKGREEN, PURPLE, DARKGREEN, BLACK};
 
 vector <Square> smallSquareSharedPositionVector;
 vector <Square> smallSquarePlayerSpecificVector;
@@ -46,6 +47,9 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods);
 void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight);
 void drawBigSquares();
 void drawSmallSquares();
+
+void saveBigSquares();
+void saveAllSqueares();
 void buildSmallSquaresForCase_0();
 void buildSmallSquaresForCase_1();
 void buildSmallSquaresForCase_2();
@@ -108,18 +112,6 @@ void setColor(Colors clr) {
     
 }
 
-
-
-
-
-
-
-void saveBigSquareVertex(GLfloat x, GLfloat y, GLfloat z, int ind) {
-    Position pos;
-    pos.setCoord(x, y);
-    //bigSquarePositionV[ind].push_back(s); have to save coordinate of bigsquarePosition later
-    return;
-}
 
 #pragma mark Draw
 void drawShape(GLfloat allRectVertices[], Colors clr, unsigned int shapeType) {
@@ -205,10 +197,12 @@ void renderSmallSquare( Position leftBottom, Position rightBottom, Position righ
 
 #pragma mark Render Opengl
 void render_opengl() {
+    saveAllSqueares();
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         addBackgroundAestheticWithFrame(screenWidth, screenHeight);
         drawGameBoards(screenWidth, screenHeight);
+        drawTokens();
         //drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36, NONE);
         //Swap front and back buffers
         glfwSwapBuffers(window);
@@ -233,30 +227,29 @@ void addEventToTheScreen() {
 
 #pragma mark Callback Cursor Position
 static void cursorPositionCallBack(GLFWwindow *window, double xPos, double yPos) {
-//    cout << xPos << "   " << yPos << endl;
-//    cursorPosX = xPos;
-//    cursorPosY = yPos;
-//    currentMousePos.setCoord(xPos, yPos);
-//    cout << "small Square Player specific vector sizes " << smallSquarePlayerSpecificVector.size() << endl;
-//    cout << "small Square shared vector sizes " << smallSquareSharedPositionVector.size() << endl;
+    //    cout << xPos << "   " << yPos << endl;
+    //    cursorPosX = xPos;
+    //    cursorPosY = yPos;
+    //    currentMousePos.setCoord(xPos, yPos);
+    //    cout << "small Square Player specific vector sizes " << smallSquarePlayerSpecificVector.size() << endl;
+    //    cout << "small Square shared vector sizes " << smallSquareSharedPositionVector.size() << endl;
     
 }
 
 #pragma mark Callback Mouse Button
 void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) {
-//    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-//        cout << "Right button Pressed " << endl;
-//    } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-//        cout << "Right Button Released " << endl;
-//    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-//        cout << "Left Button Pressed " << endl;
-//    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-//        cout << "Left Button Released " << endl;
-//        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
-//    }
+    //    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+    //        cout << "Right button Pressed " << endl;
+    //    } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+    //        cout << "Right Button Released " << endl;
+    //    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    //        cout << "Left Button Pressed " << endl;
+    //    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+    //        cout << "Left Button Released " << endl;
+    //        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
+    //    }
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
-    //cout << " smallSquareSharedPositionVector.size  " << smallSquareSharedPositionVector.size() << endl;
 }
 
 #pragma make Background color White
@@ -366,17 +359,23 @@ void drawBigSquares() {
             posVect.pb(Position(bigSquareLength, 0));
             posVect.pb(Position(bigSquareLength, bigSquareLength));
             posVect.pb(Position(0, bigSquareLength));
-            makeAndStoreBigSquare(posVect);
+            
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            }
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
             
         } else if( i == 1) {
-          
+            
             vector <Position> posVect;
             posVect.pb(Position(0, (bigSquareLength + 3 * smallSquareLength)));
             posVect.pb(Position(bigSquareLength, (bigSquareLength + 3 * smallSquareLength)));
             posVect.pb(Position(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength)));
             posVect.pb(Position(0, (2 * bigSquareLength + 3 * smallSquareLength)));
-            makeAndStoreBigSquare(posVect);
+            
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            }
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
             
         } else if( i == 2) {
@@ -386,7 +385,9 @@ void drawBigSquares() {
             posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
             posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
             posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
-            makeAndStoreBigSquare(posVect);
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            }
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
             
         }
@@ -397,11 +398,14 @@ void drawBigSquares() {
             posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), 0));
             posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength));
             posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), bigSquareLength));
-            makeAndStoreBigSquare(posVect);
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            }
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
             
         }
     }
+    firstTimeFlagBigSquare = false;
 }
 
 
@@ -497,7 +501,7 @@ int initialize_window() {
 
 #pragma mark Build Cases
 void buildSmallSquaresForCase_0() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -525,7 +529,7 @@ void buildSmallSquaresForCase_0() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -534,10 +538,10 @@ void buildSmallSquaresForCase_0() {
         posVect.clear();
     }
     //cout << " liza 0 " << endl;
- }
+}
 
 void buildSmallSquaresForCase_1() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -565,7 +569,7 @@ void buildSmallSquaresForCase_1() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -578,7 +582,7 @@ void buildSmallSquaresForCase_1() {
 }
 
 void buildSmallSquaresForCase_2() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -605,7 +609,7 @@ void buildSmallSquaresForCase_2() {
         }
         posVect.pb(pos);
     }
-    if (firstTimeFlag == true) {
+    if (firstTimeFlagSmallSharedSquare == true) {
         makeAndStoreSharedSquare(posVect);
     } else {
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -617,7 +621,7 @@ void buildSmallSquaresForCase_2() {
 }
 
 void buildSmallSquaresForCase_3() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -645,7 +649,7 @@ void buildSmallSquaresForCase_3() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -657,7 +661,7 @@ void buildSmallSquaresForCase_3() {
 }
 
 void buildSmallSquaresForCase_4() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -685,7 +689,7 @@ void buildSmallSquaresForCase_4() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -697,7 +701,7 @@ void buildSmallSquaresForCase_4() {
 }
 
 void buildSmallSquaresForCase_5() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -724,7 +728,7 @@ void buildSmallSquaresForCase_5() {
         }
         posVect.pb(pos);
     }
-    if (firstTimeFlag == true) {
+    if (firstTimeFlagSmallSharedSquare == true) {
         makeAndStoreSharedSquare(posVect);
     } else {
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -735,7 +739,7 @@ void buildSmallSquaresForCase_5() {
 }
 
 void buildSmallSquaresForCase_6() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -763,7 +767,7 @@ void buildSmallSquaresForCase_6() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -776,7 +780,7 @@ void buildSmallSquaresForCase_6() {
 }
 
 void buildSmallSquaresForCase_7() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -804,7 +808,7 @@ void buildSmallSquaresForCase_7() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -817,7 +821,7 @@ void buildSmallSquaresForCase_7() {
 }
 
 void buildSmallSquaresForCase_8() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -844,7 +848,7 @@ void buildSmallSquaresForCase_8() {
         }
         posVect.pb(pos);
     }
-    if (firstTimeFlag == true) {
+    if (firstTimeFlagSmallSharedSquare == true) {
         makeAndStoreSharedSquare(posVect);
     } else {
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -855,7 +859,7 @@ void buildSmallSquaresForCase_8() {
 }
 
 void buildSmallSquaresForCase_9() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -883,7 +887,7 @@ void buildSmallSquaresForCase_9() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -896,7 +900,7 @@ void buildSmallSquaresForCase_9() {
 }
 
 void buildSmallSquaresForCase_10() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -924,7 +928,7 @@ void buildSmallSquaresForCase_10() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlag == true) {
+        if (firstTimeFlagSmallSharedSquare == true) {
             makeAndStoreSharedSquare(posVect);
         } else {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -937,7 +941,7 @@ void buildSmallSquaresForCase_10() {
 }
 
 void buildSmallSquaresForCase_11() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -964,7 +968,7 @@ void buildSmallSquaresForCase_11() {
         }
         posVect.pb(pos);
     }
-    if (firstTimeFlag == true) {
+    if (firstTimeFlagSmallSharedSquare == true) {
         makeAndStoreSharedSquare(posVect);
     } else {
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
@@ -977,7 +981,7 @@ void buildSmallSquaresForCase_11() {
 
 void buildSmallSqrPlayer_0() {
     
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -1005,8 +1009,11 @@ void buildSmallSqrPlayer_0() {
             }
             posVect.pb(pos);
         }
-        makeAndStorePlayerSpecificSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
+        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+            makeAndStorePlayerSpecificSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
+        }
         posVect.clear();
     }
     
@@ -1016,7 +1023,7 @@ void buildSmallSqrPlayer_0() {
 
 void buildSmallSqrPlayer_1() {
     
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -1044,14 +1051,17 @@ void buildSmallSqrPlayer_1() {
             }
             posVect.pb(pos);
         }
-        makeAndStorePlayerSpecificSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
+        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+            makeAndStorePlayerSpecificSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
+        }
         posVect.clear();
     }
 }
 
 void buildSmallSqrPlayer_2() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -1079,14 +1089,18 @@ void buildSmallSqrPlayer_2() {
             }
             posVect.pb(pos);
         }
-        makeAndStorePlayerSpecificSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
+        
+        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+            makeAndStorePlayerSpecificSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
+        }
         posVect.clear();
     }
 }
 
 void buildSmallSqrPlayer_3() {
-    vector <GLfloat> xPosVector;
+    vector <GLfloat> xPosVector;
     vector <GLfloat> yPosVector;
     vector <Position> posVect;
     GLfloat startingYPos, startingYPos2, startingXPos, startingXPos2;
@@ -1114,12 +1128,77 @@ void buildSmallSqrPlayer_3() {
             }
             posVect.pb(pos);
         }
-        makeAndStorePlayerSpecificSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
+        
+        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+            makeAndStorePlayerSpecificSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
+        }
         posVect.clear();
     }
 }
 
+void saveBigSquares() {
+    for (int i = 0; i < numberOfBigSquare; i++) {
+        if (i == 0) {
+            vector <Position> posVect;
+            posVect.pb(Position(0, 0));
+            posVect.pb(Position(bigSquareLength, 0));
+            posVect.pb(Position(bigSquareLength, bigSquareLength));
+            posVect.pb(Position(0, bigSquareLength));
+            
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            } else {
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
+            
+        } else if( i == 1) {
+            
+            vector <Position> posVect;
+            posVect.pb(Position(0, (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(bigSquareLength, (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position(0, (2 * bigSquareLength + 3 * smallSquareLength)));
+            
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            } else {
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
+            
+        } else if( i == 2) {
+            
+            vector <Position> posVect;
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
+            
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            } else {
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
+            
+        }
+        else if( i == 3) {
+            
+            vector <Position> posVect;
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), 0));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), 0));
+            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength));
+            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), bigSquareLength));
+            if (firstTimeFlagBigSquare == true) {
+                makeAndStoreBigSquare(posVect);
+            } else {
+            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
+            
+        }
+    }
+    firstTimeFlagBigSquare = false;
+}
 
 void saveAllSqueares() {
     
@@ -1180,24 +1259,55 @@ void saveAllSqueares() {
         }
     }
     
-    firstTimeFlag = false;
-//    for (int i = 0; i < 4; i++) {
-//
-//        switch (i) {
-//            case 0:
-//                buildSmallSqrPlayer_0();
-//                break;
-//            case 1:
-//                buildSmallSqrPlayer_1();
-//                break;
-//            case 2:
-//                buildSmallSqrPlayer_2();
-//                break;
-//            case 3:
-//                buildSmallSqrPlayer_3();
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    firstTimeFlagSmallSharedSquare = false;
+        for (int i = 0; i < 4; i++) {
+    
+            switch (i) {
+                case 0:
+                    buildSmallSqrPlayer_0();
+                    break;
+                case 1:
+                    buildSmallSqrPlayer_1();
+                    break;
+                case 2:
+                    buildSmallSqrPlayer_2();
+                    break;
+                case 3:
+                    buildSmallSqrPlayer_3();
+                    break;
+                default:
+                    break;
+            }
+        }
+    firstTimeFlagPlayerSpecificSquare = false;
+    saveBigSquares();
 }
+
+void drawTokens() {
+    for(int i=0;i<numberOfTotalPlayers;i++){
+        Player pl = playerCurrentlyPlayingList[i];
+        vector<Token> tokens = pl.getTokenList();
+        for(int j=0;j<tokens.size();j++){
+            Position pos = tokens[j].getPos();
+            drawCircle(pos.getxPos(), pos.getyPos(), 0, 20, 36,pl.getPlayer_id());
+        }
+    }
+}
+
+void printNumOfSquares(){
+    cout << " smallSquareSharedPositionVector.size()  " << smallSquareSharedPositionVector.size() << endl;
+    cout << " smallSquarePlayerSpecificVector.size()  " << smallSquarePlayerSpecificVector.size() << endl;
+    cout << " bigSquareVector.size()  " << bigSquareVector.size() << endl;
+}
+
+void animateToken(){
+    double time = glfwGetTime();
+    if((timeStampInSec+0.1) < time){
+        timeStampInSec = time;
+        circleInWhichSquare++;
+    }
+    circleInWhichSquare = circleInWhichSquare%smallSquareSharedPositionVector.size();
+    drawCircle(smallSquareSharedPositionVector[circleInWhichSquare].getmidX(),
+               smallSquareSharedPositionVector[circleInWhichSquare].getmidY(), 0, 20, 36, NONE);
+}
+

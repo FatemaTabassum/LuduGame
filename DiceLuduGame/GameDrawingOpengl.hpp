@@ -31,16 +31,21 @@ using namespace std;
 #define TOTAL_SMALL_SQUARE_SHARED 53
 #define TOTAL_SMALL_SQUARE ( 53 + 20 )
 
-#define TOTAL_TOKEN 4
+#define TOTAL_TOKEN 1
 #define pb(x) push_back(x)
 
 #endif
-
+extern Colors playerColor[];
+extern Colors playerTokenColor[];
+extern int numberOfTotalPlayers;
+extern vector <Player> playerCurrentlyPlayingList;
+extern const GLfloat smallSquareLength;
+extern const GLfloat bigSquareLength;
 int initialize_window();
 void addEventToTheScreen();
 void saveAllSqueares();
-
-
+void printNumOfSquares();
+void drawTokens();
 
 /************* Functions **********/
 void render_opengl();
