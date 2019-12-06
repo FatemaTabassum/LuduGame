@@ -14,6 +14,8 @@ using namespace std;
 
 #pragma mark Main
 int main(void) {
+    
+    saveAllSqueares();
     if (initialize_window() == 1) {
         return -1;
     }

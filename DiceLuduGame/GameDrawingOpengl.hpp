@@ -34,32 +34,11 @@ using namespace std;
 #define TOTAL_TOKEN 4
 #define pb(x) push_back(x)
 
-#endif /* GameDrawingOpengl_hpp */
+#endif
 
-//extern GLFWwindow *window;
-//extern const GLfloat halfScreenWidth ;
-//extern const GLfloat halfScreenHeight ;
-//extern const GLfloat halfSideLength ;
-//extern const GLfloat smallSquareLength ;
-//extern const GLfloat bigSquareLength ;
-//extern const GLfloat numberOfBigSquare ;
-//extern int screenWidth, screenHeight, gameScreenWidth, gameScreenheight;
-//extern Position currentMousePos;
-//extern const int numberOfTotalPlayers ;
-//extern const float radius ;
-//extern vector <Player> playerCurrentlyPlayingList;
-//extern float cursorPosX, cursorPosY;
-//
-//extern Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
-//extern Colors playerTokenColor[] = {WHITE, PURPLE, DARKGREEN, BLACK};
-//
-//extern const int totalTok;
-//
-//extern vector <Square> smallSquareSharedPositionVector;
-//extern vector <Square> smallSquarePlayerSpecificVector;
-//extern vector <Square> bigSquareVector;
 int initialize_window();
 void addEventToTheScreen();
+void saveAllSqueares();
 
 
 

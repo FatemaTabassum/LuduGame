@@ -25,6 +25,7 @@ const int numberOfTotalPlayers = 4;
 const float radius = 20;
 vector <Player> playerCurrentlyPlayingList;
 float cursorPosX, cursorPosY;
+bool firstTimeFlag = true;
 
 Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
 Colors playerTokenColor[] = {WHITE, PURPLE, DARKGREEN, BLACK};
@@ -232,27 +233,30 @@ void addEventToTheScreen() {
 
 #pragma mark Callback Cursor Position
 static void cursorPositionCallBack(GLFWwindow *window, double xPos, double yPos) {
-    cout << xPos << "   " << yPos << endl;
-    cursorPosX = xPos;
-    cursorPosY = yPos;
-    currentMousePos.setCoord(xPos, yPos);
-    cout << "small Square Player specific vector sizes " << smallSquarePlayerSpecificVector.size() << endl;
-    cout << "small Square shared vector sizes " << smallSquarePlayerSpecificVector.size() << endl;
+//    cout << xPos << "   " << yPos << endl;
+//    cursorPosX = xPos;
+//    cursorPosY = yPos;
+//    currentMousePos.setCoord(xPos, yPos);
+//    cout << "small Square Player specific vector sizes " << smallSquarePlayerSpecificVector.size() << endl;
+//    cout << "small Square shared vector sizes " << smallSquareSharedPositionVector.size() << endl;
     
 }
 
 #pragma mark Callback Mouse Button
 void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-        cout << "Right button Pressed " << endl;
-    } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-        cout << "Right Button Released " << endl;
-    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        cout << "Left Button Pressed " << endl;
-    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        cout << "Left Button Released " << endl;
-        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
-    }
+//    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+//        cout << "Right button Pressed " << endl;
+//    } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+//        cout << "Right Button Released " << endl;
+//    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+//        cout << "Left Button Pressed " << endl;
+//    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+//        cout << "Left Button Released " << endl;
+//        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
+//    }
+    double xPos, yPos;
+    glfwGetCursorPos(window, &xPos, &yPos);
+    //cout << " smallSquareSharedPositionVector.size  " << smallSquareSharedPositionVector.size() << endl;
 }
 
 #pragma make Background color White
@@ -274,9 +278,6 @@ void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight) {
 
 #pragma mark Draw Small Squares ---must change name
 void drawSmallSquares() {
-    
-    smallSquareSharedPositionVector.clear();
-    smallSquarePlayerSpecificVector.clear();
     
     for (int i = 0; i < 12 ; i++) {
         
@@ -355,11 +356,11 @@ void drawSmallSquares() {
     }
 }
 
+
 #pragma mark Draw Big Square
 void drawBigSquares() {
     for (int i = 0; i < numberOfBigSquare; i++) {
         if (i == 0) {
-    
             vector <Position> posVect;
             posVect.pb(Position(0, 0));
             posVect.pb(Position(bigSquareLength, 0));
@@ -524,11 +525,16 @@ void buildSmallSquaresForCase_0() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
-}
+    //cout << " liza 0 " << endl;
+ }
 
 void buildSmallSquaresForCase_1() {
     vector <GLfloat> xPosVector;
@@ -559,10 +565,16 @@ void buildSmallSquaresForCase_1() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
+    
+    //cout << " liza 1 " << endl;
 }
 
 void buildSmallSquaresForCase_2() {
@@ -593,8 +605,15 @@ void buildSmallSquaresForCase_2() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSharedSquare(posVect);
-    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    if (firstTimeFlag == true) {
+        makeAndStoreSharedSquare(posVect);
+    } else {
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    }
+    
+    posVect.clear();
+    
+    //cout << " liza 2 " << endl;
 }
 
 void buildSmallSquaresForCase_3() {
@@ -626,10 +645,15 @@ void buildSmallSquaresForCase_3() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
         posVect.clear();
     }
+    
+    //cout << " liza 3 " << endl;
 }
 
 void buildSmallSquaresForCase_4() {
@@ -661,10 +685,15 @@ void buildSmallSquaresForCase_4() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
         posVect.clear();
     }
+    
+    //cout << " liza 4 " << endl;
 }
 
 void buildSmallSquaresForCase_5() {
@@ -695,8 +724,14 @@ void buildSmallSquaresForCase_5() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSharedSquare(posVect);
-    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    if (firstTimeFlag == true) {
+        makeAndStoreSharedSquare(posVect);
+    } else {
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    }
+    
+    posVect.clear();
+    //cout << " liza 5 " << endl;
 }
 
 void buildSmallSquaresForCase_6() {
@@ -728,10 +763,16 @@ void buildSmallSquaresForCase_6() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
+    
+    //cout << " liza 6 " << endl;
 }
 
 void buildSmallSquaresForCase_7() {
@@ -763,10 +804,16 @@ void buildSmallSquaresForCase_7() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
+    
+    //cout << " liza 7 " << endl;
 }
 
 void buildSmallSquaresForCase_8() {
@@ -797,8 +844,14 @@ void buildSmallSquaresForCase_8() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSharedSquare(posVect);
-    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    if (firstTimeFlag == true) {
+        makeAndStoreSharedSquare(posVect);
+    } else {
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    }
+    
+    posVect.clear();
+    //cout << " liza 8 " << endl;
 }
 
 void buildSmallSquaresForCase_9() {
@@ -830,10 +883,16 @@ void buildSmallSquaresForCase_9() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
+    
+    //cout << " liza 9 " << endl;
 }
 
 void buildSmallSquaresForCase_10() {
@@ -865,10 +924,16 @@ void buildSmallSquaresForCase_10() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
-        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        if (firstTimeFlag == true) {
+            makeAndStoreSharedSquare(posVect);
+        } else {
+            renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+        }
+        
         posVect.clear();
     }
+    
+    //cout << " liza 10 " << endl;
 }
 
 void buildSmallSquaresForCase_11() {
@@ -899,8 +964,14 @@ void buildSmallSquaresForCase_11() {
         }
         posVect.pb(pos);
     }
-    makeAndStoreSharedSquare(posVect);
-    renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    if (firstTimeFlag == true) {
+        makeAndStoreSharedSquare(posVect);
+    } else {
+        renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], NONE);
+    }
+    
+    posVect.clear();
+    //cout << " liza 11 " << endl;
 }
 
 
@@ -938,6 +1009,8 @@ void buildSmallSqrPlayer_0() {
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
         posVect.clear();
     }
+    
+    //cout << " liza  " << endl;
     //smallSquarePlayerSpecificVector
 }
 
@@ -971,7 +1044,7 @@ void buildSmallSqrPlayer_1() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
+        makeAndStorePlayerSpecificSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
         posVect.clear();
     }
@@ -1006,7 +1079,7 @@ void buildSmallSqrPlayer_2() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
+        makeAndStorePlayerSpecificSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
         posVect.clear();
     }
@@ -1041,8 +1114,90 @@ void buildSmallSqrPlayer_3() {
             }
             posVect.pb(pos);
         }
-        makeAndStoreSharedSquare(posVect);
+        makeAndStorePlayerSpecificSquare(posVect);
         renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
         posVect.clear();
     }
+}
+
+
+void saveAllSqueares() {
+    
+    for (int i = 0; i < 12 ; i++) {
+        
+        switch (i) {
+            case 0: {
+                buildSmallSquaresForCase_0();
+                break;
+            }
+            case 1: {
+                buildSmallSquaresForCase_1();
+                break;
+            }
+            case 2: {
+                buildSmallSquaresForCase_2();
+                break;
+            }
+            case 3: {
+                buildSmallSquaresForCase_3();
+                break;
+            }
+            case 4: {
+                buildSmallSquaresForCase_4();
+                break;
+            }
+            case 5: {
+                buildSmallSquaresForCase_5();
+                break;
+            }
+            case 6: {
+                buildSmallSquaresForCase_6();
+                break;
+            }
+            case 7: {
+                buildSmallSquaresForCase_7();
+                break;
+            }
+            case 8: {
+                buildSmallSquaresForCase_8();
+                break;
+            }
+            case 9: {
+                buildSmallSquaresForCase_9();
+                break;
+            }
+            case 10: {
+                buildSmallSquaresForCase_10();
+                break;
+            }
+            case 11: {
+                buildSmallSquaresForCase_11();
+                break;
+            }
+                
+            default:
+                break;
+        }
+    }
+    
+    firstTimeFlag = false;
+//    for (int i = 0; i < 4; i++) {
+//
+//        switch (i) {
+//            case 0:
+//                buildSmallSqrPlayer_0();
+//                break;
+//            case 1:
+//                buildSmallSqrPlayer_1();
+//                break;
+//            case 2:
+//                buildSmallSqrPlayer_2();
+//                break;
+//            case 3:
+//                buildSmallSqrPlayer_3();
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 }
