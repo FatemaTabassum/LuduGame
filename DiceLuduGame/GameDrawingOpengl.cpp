@@ -1139,64 +1139,7 @@ void buildSmallSqrPlayer_3() {
 }
 
 void saveBigSquares() {
-    for (int i = 0; i < numberOfBigSquare; i++) {
-        if (i == 0) {
-            vector <Position> posVect;
-            posVect.pb(Position(0, 0));
-            posVect.pb(Position(bigSquareLength, 0));
-            posVect.pb(Position(bigSquareLength, bigSquareLength));
-            posVect.pb(Position(0, bigSquareLength));
-            
-            if (firstTimeFlagBigSquare == true) {
-                makeAndStoreBigSquare(posVect);
-            } else {
-            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
-            }
-            
-        } else if( i == 1) {
-            
-            vector <Position> posVect;
-            posVect.pb(Position(0, (bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position(bigSquareLength, (bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position(bigSquareLength, (2 * bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position(0, (2 * bigSquareLength + 3 * smallSquareLength)));
-            
-            if (firstTimeFlagBigSquare == true) {
-                makeAndStoreBigSquare(posVect);
-            } else {
-            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
-            }
-            
-        } else if( i == 2) {
-            
-            vector <Position> posVect;
-            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
-            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
-            
-            if (firstTimeFlagBigSquare == true) {
-                makeAndStoreBigSquare(posVect);
-            } else {
-            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
-            }
-            
-        }
-        else if( i == 3) {
-            
-            vector <Position> posVect;
-            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), 0));
-            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), 0));
-            posVect.pb(Position((2 * bigSquareLength + 3 * smallSquareLength), bigSquareLength));
-            posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), bigSquareLength));
-            if (firstTimeFlagBigSquare == true) {
-                makeAndStoreBigSquare(posVect);
-            } else {
-            renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
-            }
-            
-        }
-    }
+    drawBigSquares();
     firstTimeFlagBigSquare = false;
 }
 
