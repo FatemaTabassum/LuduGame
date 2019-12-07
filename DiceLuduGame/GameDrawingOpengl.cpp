@@ -25,7 +25,7 @@ float cursorPosX, cursorPosY;
 bool firstTimeFlagSmallSharedSquare = true;
 bool firstTimeFlagBigSquare = true;
 bool firstTimeFlagPlayerSpecificSquare = true;
-int circleInWhichSquare=0;
+int circleInWhichSquare = 0;
 double timeStampInSec = 0.1;
 
 Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
@@ -34,6 +34,7 @@ Colors playerTokenColor[] = {DARKGREEN, PURPLE, DARKGREEN, BLACK};
 vector <Square> smallSquareSharedPositionVector;
 vector <Square> smallSquarePlayerSpecificVector;
 vector <Square> bigSquareVector;
+Square diceSquare;
 
 
 #pragma mark functions Prototype
@@ -47,6 +48,9 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods);
 void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight);
 void drawBigSquares();
 void drawSmallSquares();
+void drawDice();
+void saveDiceArea();
+
 
 void saveBigSquares();
 void saveAllSqueares();
@@ -105,6 +109,9 @@ void setColor(Colors clr) {
             break;
         case BLACK:
             glColor3f (0.0, 0.0, 0.0 );  /* the current RGB color is BLACK: */
+            break;
+        case DICECOLOR:
+            glColor3f (0.8, 0.4, 0.0 );
             break;
         default:
             break;
@@ -198,11 +205,15 @@ void renderSmallSquare( Position leftBottom, Position rightBottom, Position righ
 #pragma mark Render Opengl
 void render_opengl() {
     saveAllSqueares();
+    saveDiceArea();
+    createAndInitPlayers(numberOfTotalPlayers);
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         addBackgroundAestheticWithFrame(screenWidth, screenHeight);
         drawGameBoards(screenWidth, screenHeight);
+        simulateGame();
         drawTokens();
+        drawDice();
         //drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36, NONE);
         //Swap front and back buffers
         glfwSwapBuffers(window);
@@ -215,6 +226,7 @@ void render_opengl() {
 void drawGameBoards(int screenWidth, int screenHeight) {
     drawBigSquares();
     drawSmallSquares();
+    drawDice();
 }
 
 #pragma mark Event
@@ -250,6 +262,8 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
     //    }
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
+    srand(NULL);
+    currentPlayerId = rand() % 5;
 }
 
 #pragma make Background color White
@@ -347,6 +361,25 @@ void drawSmallSquares() {
                 break;
         }
     }
+}
+
+#pragma mark Draw Dice
+
+
+void saveDiceArea() {
+    diceSquare.setLeftBottomPos(bigSquareVector[0].getRightUpperPos());
+    diceSquare.setLeftUpperPos(bigSquareVector[1].getRightBottomPos());
+    diceSquare.setRightUpperPos(bigSquareVector[2].getLeftBottomPos());
+    diceSquare.setRightBottomPos(bigSquareVector[3].getLeftUpperPos());
+}
+void drawDice() {
+    GLfloat allRectVertices[] = {
+        diceSquare.getLeftBottomPos().getxPos(), diceSquare.getLeftBottomPos().getyPos(), 0,
+        diceSquare.getRightBottomPos().getxPos(), diceSquare.getRightBottomPos().getyPos(), 0,
+        diceSquare.getRightUpperPos().getxPos(), diceSquare.getRightUpperPos().getyPos(), 0,
+        diceSquare.getLeftUpperPos().getxPos(), diceSquare.getLeftUpperPos().getyPos(), 0
+    };
+    drawShape(allRectVertices, DICECOLOR , GL_POLYGON);
 }
 
 
@@ -1245,12 +1278,13 @@ void printNumOfSquares(){
 
 void animateToken(){
     double time = glfwGetTime();
-    if((timeStampInSec+0.1) < time){
+    if((timeStampInSec+0.1) < time) {
         timeStampInSec = time;
         circleInWhichSquare++;
     }
-    circleInWhichSquare = circleInWhichSquare%smallSquareSharedPositionVector.size();
+    circleInWhichSquare = circleInWhichSquare % smallSquareSharedPositionVector.size();
     drawCircle(smallSquareSharedPositionVector[circleInWhichSquare].getmidX(),
                smallSquareSharedPositionVector[circleInWhichSquare].getmidY(), 0, 20, 36, NONE);
 }
+
 

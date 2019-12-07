@@ -98,20 +98,34 @@ Player::Player() {
 }
 Player::Player(unsigned int player_id) {
     this->player_id = player_id;
+    this->homeway = false;
 }
 Player::Player(Position p) {
     pos = pos;
     posindex = 0;
     status = 0;
-    homeway = 0;
+    homeway = false;
 }
 void Player:: setPosition(int pindex,Position p) {
-    posindex=pindex;
-    pos=p;
+    posindex = pindex;
+    pos = p;
 }
 void Player:: setColor(Colors color) {
     this->color = color;
 }
+
+void Player:: setTokenList(vector <Token> list) {
+    this->tokenList = list;
+}
+
+void Player:: setHomeway(bool homeway){
+    this->homeway = homeway;
+}
+
+bool Player:: getHomeway(){
+    return this->homeway;
+}
+
 unsigned int Player:: getPlayer_id() {
     return this->player_id;
 }
@@ -119,8 +133,15 @@ void Player:: initializeTokenList(Colors tokenColor) {
     for (int i = 0; i < TOTAL_TOKEN; i++) {
         Token tok = Token(i);
         tok.setTokenColor(tokenColor);
-        //get it from big square
-        Position pos = Position(bigSquareLength/2, bigSquareLength/2);
+        float centerX=bigSquareLength/2;
+        float centerY = bigSquareLength/2;
+        
+        //printf("%lu %lu\n",player_id,bigSquareVector.size());
+        if(player_id < bigSquareVector.size()){
+            centerX = bigSquareVector[player_id].getmidX();
+            centerY = bigSquareVector[player_id].getmidY();
+        }
+        Position pos = Position(centerX, centerY);
         tok.setPos(pos);
         this->tokenList.push_back(tok);
     }

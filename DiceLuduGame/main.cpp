@@ -2,14 +2,16 @@
 #include "GameDrawingOpengl.hpp"
 #include "Backend.hpp"
 #include "GameSimulator.hpp"
+
 using namespace std;
 
+
+void libraryInitialization();
 
 #pragma mark Main
 int main(void) {
     
     //takeInput();
-    createAndInitPlayers(numberOfTotalPlayers);
     if (initialize_window() == 1) {
         return -1;
     }
@@ -18,4 +20,5 @@ int main(void) {
     printNumOfSquares();
     return 0;
 }
+
 

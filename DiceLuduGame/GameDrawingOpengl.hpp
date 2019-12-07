@@ -16,6 +16,8 @@
 #include <vector>
 #include <math.h>
 #include "GameHelperObjects.h"
+#include "GameSimulator.hpp"
+
 
 using namespace std;
 
@@ -41,6 +43,13 @@ extern int numberOfTotalPlayers;
 extern vector <Player> playerCurrentlyPlayingList;
 extern const GLfloat smallSquareLength;
 extern const GLfloat bigSquareLength;
+
+extern vector <Square> smallSquareSharedPositionVector;
+extern vector <Square> smallSquarePlayerSpecificVector;
+extern vector <Square> bigSquareVector;
+extern Square diceSquare;
+
+
 int initialize_window();
 void addEventToTheScreen();
 void saveAllSqueares();

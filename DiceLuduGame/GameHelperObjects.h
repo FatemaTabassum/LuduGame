@@ -25,6 +25,7 @@ enum Colors {
     CYAN, // used as big square
     DARKGREEN, // can be used as token
     BLACK, // can be used as token
+    DICECOLOR,
     NONE
 };
 
@@ -71,12 +72,12 @@ private:
     unsigned int player_id;
     Position pos;
     vector< Token > tokenList;
+    bool homeway;
     //player has attribute of type class Position
     
 public:
     int posindex;
     int status;
-    int homeway;
     Colors color;
     
     Player();
@@ -84,8 +85,11 @@ public:
     Player(Position p);
     void setPosition(int pindex,Position p);
     void setColor(Colors color);
+    void setTokenList(vector <Token> list);
     unsigned int getPlayer_id();
     void initializeTokenList(Colors tokenColor);
+    void setHomeway(bool homeway);
+    bool getHomeway();
     vector<Token> getTokenList();
 };
 
