@@ -20,9 +20,11 @@ bool userLoggedIn=false;
 
 /*************Main Function*************/
 
-void runClient(string servhost, int servport, int peersPort)
-{
+void *runClient(void * arg) {
+    struct RunClientParameters * clientParams = ( struct RunClientParameters *)arg;
     
+    string servhost = clientParams->serverName ;
+    int servport = clientParams->serverPort;
     onlineFriends.clear();
     int *sock_ptr;
     
@@ -38,7 +40,7 @@ void runClient(string servhost, int servport, int peersPort)
     sigaction(SIGINT, &abc, NULL);
     
     serverSockfd=connectToRemoteMachine(servhost.c_str(),servport,true);
-    peerServport = peersPort;
+    peerServport = 0;
     
     sock_ptr = (int *)malloc(sizeof(int));
     *sock_ptr = serverSockfd;
@@ -62,7 +64,9 @@ void runClient(string servhost, int servport, int peersPort)
         //return from this
         if(bufferString.compare("play")==0)
         {
-            return;
+            payloadString = createReqToStartPayload(username, "Start_game");
+            cout<< "play is sending: "<<payloadString<<endl;
+            write(serverSockfd, payloadString.c_str(), strlen(payloadString.c_str())+1);
         }
         ///User Registration
         if(bufferString.compare("r")==0)
@@ -155,7 +159,7 @@ void runClient(string servhost, int servport, int peersPort)
             
         }
     }
-    
+    return NULL; // Recheck
     
 }
 
@@ -271,6 +275,11 @@ void parseServerMessage(int sockfd,char *buf)
         getline(message,messageBody,OPTYPE_DELIM);
         parseInviteMessage(messageBody);
     }
+    else if(messageBody.compare(OP_TYPE_PLAY)==0)
+    {
+        getline(message,messageBody,OPTYPE_DELIM);
+        parsePlayInviteMessage(messageBody);
+    }
     message.clear();
 }
 
@@ -319,6 +328,34 @@ void parseInviteMessage(string messageBody)
     
 }
 
+/*******************Parsing Play Message*********************/
+
+void parsePlayInviteMessage(string messageBody){
+    cout<<"Got an invitaiton to play: "<<messageBody<<endl;
+    string s,fromuser, num_of_players;
+    istringstream mesageBodyStream(messageBody);
+    istringstream valueStream("");
+    while(getline(mesageBodyStream,s,MAIN_DELIM))
+    {
+        valueStream.clear();
+        valueStream.str(s);
+        getline(valueStream,s,VALUE_DELIM);
+        if(s.compare(VALUE_TYPE_USERNAME)==0)
+        {
+            getline(valueStream,fromuser,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_NUM_OF_PLAYERS)==0)
+        {
+            getline(valueStream,num_of_players,VALUE_DELIM);
+        }
+        
+    }
+    
+    cout<<"Invited by: "<<fromuser<<", total players: "<<stoi(num_of_players)<<endl;
+    //Now you can start the Game haha
+    startPlayingGame(stoi(num_of_players), fromuser);
+    
+}
 /*************Parsing Friend Location Message****************/
 
 void parseFriendLocationMessage(string messageBody)
@@ -536,6 +573,15 @@ string createInvitePayload(string targetUsername, string message)
     return payload;
 }
 
+string createReqToStartPayload(string targetUsername, string message){
+    ostringstream buffer;
+    string payload;
+    buffer<<OP_TYPE_PLAY<<OPTYPE_DELIM<<VALUE_TYPE_USERNAME<<VALUE_DELIM<<username<<MAIN_DELIM<<VALUE_TYPE_MESSAGE<<VALUE_DELIM<<message;
+    payload=buffer.str();
+    buffer.clear();
+    return payload;
+}
+
 string createAcceptInvitePayload(string inviterUsername, string message)
 {
     
@@ -706,15 +752,12 @@ void userInitialPromt()
 {
     cout<<"1. Enter 'r' for Registration"<<endl;
     cout<<"2. Enter 'l' to login"<<endl;
-    cout<<"3. Enter \"play\" to start Game"<<endl;
 }
 
 void userAfterLoginPromt()
 {
-    cout<<"1. Enter 'm friend_username message' to send message"<<endl;
-    cout<<"2. Enter 'i potential_friend_username message' to invite to chat"<<endl;
-    cout<<"3. Enter 'ia inviter_username' to accept invitation"<<endl;
-    cout<<"4. Enter 'logout' to logout from the server"<<endl;
+    cout << "1. Enter 'play' to start play" <<endl;
+    cout << "2. Enter 'quit' to quit game" << endl;
 }
 
 /* Ctrl-C: SIGINT Occurred */
@@ -726,3 +769,4 @@ void sig_int(int signo)
     close(serverSockfd);
     exit(0);
 }
+

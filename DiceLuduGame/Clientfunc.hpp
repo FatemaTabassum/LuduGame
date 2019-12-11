@@ -30,6 +30,8 @@
 #include <netdb.h>
 #include <unordered_map>
 #include <unordered_set>
+#include "GameSimulator.hpp"
+
 using namespace std;
 
 
@@ -42,6 +44,7 @@ using namespace std;
 #define OP_TYPE_LOCATION "location"
 #define OP_TYPE_MESSAGE "message"
 #define OP_TYPE_INVITE "invite"
+#define OP_TYPE_PLAY "play"
 #define OP_TYPE_ACCEPT_INVITE "accept_invite"
 #define OP_TYPE_LOGOUT "logout"
 #define VALUE_TYPE_USERNAME "username"
@@ -51,9 +54,10 @@ using namespace std;
 #define VALUE_TYPE_MESSAGE "message"
 #define VALUE_TYPE_FROMUSER "fromuser"
 #define VALUE_TYPE_TOUSER "touser"
+#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
 
 
-void runClient(string servhost, int servport, int peersPort);
+void *runClient(void * arg);
 int connectToRemoteMachine(const char *ip, int port,bool exitIferror);
 string creatLoginPayloadString(string username, string password);
 string creatRegisterPayloadString(string username, string password);
@@ -80,4 +84,7 @@ void *acceptPeerConnection(void *arg);
 void *processServerConection(void *arg);
 void *process_connection(void *arg);
 
+string createReqToStartPayload(string targetUsername, string message);
+void parsePlayInviteMessage(string messageBody);
 #endif /* Clientfunc_hpp */
+

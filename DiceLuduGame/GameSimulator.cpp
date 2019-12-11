@@ -14,6 +14,9 @@ using namespace std;
 #pragma mark Globals
 int currentPlayerId = -1;
 
+#pragma mark TEST
+int numberOfOnlinePlayers = 0;
+
 #pragma mark Functions Prototypes
 
 int getRandomNumber();
@@ -27,6 +30,12 @@ void createAndInitPlayers(int num_of_players){
         newPlayer.initializeTokenList(playerTokenColor[i]);
         playerCurrentlyPlayingList.push_back(newPlayer);
     }
+}
+
+void startPlayingGame(int numberOfOnlinePlayers, string username) {
+    gameInitialSetup();
+    createAndInitPlayers(numberOfOnlinePlayers);
+    //rurender_opengl();
 }
 
 void simulateGame() {

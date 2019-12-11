@@ -46,6 +46,13 @@ enum Dice {
     DICE_ROT_2
 };
 
+#pragma mark Server Necessary Variables
+
+struct RunClientParameters {
+    string serverName;
+    int serverPort;
+};
+
 class Position {
 private:
     //float xPos2;

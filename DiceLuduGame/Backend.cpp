@@ -10,6 +10,12 @@
 #include "Clientfunc.hpp"
 #include <iostream>
 using namespace std;
+
+
+pthread_t tid;
+RunClientParameters * runClientParams;
+RunClientParameters  runClien;
+
 void takeInput(){
     string serverHost;
     int servers_port_num, peers_port_num;
@@ -19,10 +25,10 @@ void takeInput(){
     //server's port number
     cout << "Enter Server's Port num:\n";
     cin >> servers_port_num;
-    //and peers port number
-    cout << "Enter Peers port num:\n";
-    cin >> peers_port_num;
     //from the client
-    runClient(serverHost, servers_port_num, peers_port_num);
-    runClient("localhost", 5100, 5542);
+    runClien.serverPort = servers_port_num;
+    runClien.serverName = serverHost;
+    runClientParams = &runClien;
+    pthread_create(&tid, NULL, &runClient, (void*) runClientParams);
+    (void)pthread_join(tid, NULL);
 }

@@ -64,6 +64,7 @@ Square diceSquare;
 #pragma mark functions Prototype
 int initialize_window();
 void render_opengl();
+void gameInitialSetup();
 void drawGameBoards(int screenWidth, int screenHeight);
 void setColor(Colors clr);
 void addEventToTheScreen();
@@ -235,13 +236,18 @@ void renderSmallSquare( Position leftBottom, Position rightBottom, Position righ
     }
 }
 
+#pragma mark Game Initial Setup after Server Call
+
+void gameInitialSetup() {
+    saveAllSqueares();
+    saveDiceArea();
+}
 
 
 #pragma mark Render Opengl
 void render_opengl() {
-    saveAllSqueares();
-    saveDiceArea();
-    createAndInitPlayers(numberOfTotalPlayers);
+    //gameInitialSetup();
+    //createAndInitPlayers(numberOfTotalPlayers);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0,0.0,0.0,1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -546,8 +552,9 @@ void drawBigSquares() {
             
             if (firstTimeFlagBigSquare == true) {
                 makeAndStoreBigSquare(posVect);
-            }
+            } else {
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
             
         } else if( i == 1) {
             
@@ -559,8 +566,9 @@ void drawBigSquares() {
             
             if (firstTimeFlagBigSquare == true) {
                 makeAndStoreBigSquare(posVect);
-            }
+            } else {
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
             
         } else if( i == 2) {
             
@@ -571,9 +579,9 @@ void drawBigSquares() {
             posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), (2 * bigSquareLength + 3 * smallSquareLength)));
             if (firstTimeFlagBigSquare == true) {
                 makeAndStoreBigSquare(posVect);
-            }
+            } else {
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
-            
+            }
         }
         else if( i == 3) {
             
@@ -584,8 +592,9 @@ void drawBigSquares() {
             posVect.pb(Position((bigSquareLength + 3 * smallSquareLength), bigSquareLength));
             if (firstTimeFlagBigSquare == true) {
                 makeAndStoreBigSquare(posVect);
-            }
+            } else {
             renderBigSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[i]);
+            }
             
         }
     }
@@ -1195,7 +1204,7 @@ void buildSmallSqrPlayer_0() {
         }
         if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
             makeAndStorePlayerSpecificSquare(posVect);
-        } else {
+        } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
         }
         posVect.clear();
@@ -1237,7 +1246,7 @@ void buildSmallSqrPlayer_1() {
         }
         if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
             makeAndStorePlayerSpecificSquare(posVect);
-        } else {
+        } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
         }
         posVect.clear();
@@ -1276,7 +1285,7 @@ void buildSmallSqrPlayer_2() {
         
         if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
             makeAndStorePlayerSpecificSquare(posVect);
-        } else {
+        } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
         }
         posVect.clear();
@@ -1315,7 +1324,7 @@ void buildSmallSqrPlayer_3() {
         
         if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
             makeAndStorePlayerSpecificSquare(posVect);
-        } else {
+        } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
         }
         posVect.clear();

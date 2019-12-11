@@ -58,6 +58,7 @@ void addEventToTheScreen();
 void saveAllSqueares();
 void printNumOfSquares();
 void drawTokens();
+void gameInitialSetup();
 
 /************* Functions **********/
 void render_opengl();

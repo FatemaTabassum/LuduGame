@@ -11,5 +11,9 @@
 
 #include <stdio.h>
 #include "Friend.hpp"
+#include <pthread.h>
+
 void takeInput();
+
 #endif /* Backend_hpp */
+
