@@ -26,7 +26,24 @@ enum Colors {
     DARKGREEN, // can be used as token
     BLACK, // can be used as token
     DICECOLOR,
+    LIGHTBROWN,
+    LIGHTCYAN,
+    FEROZA, // replace with english name
+    SKYCOLOR,
+    BLACKISHVIOLET,
     NONE
+};
+
+enum Dice {
+    DICENONE,
+    DICE_1,
+    DICE_2,
+    DICE_3,
+    DICE_4,
+    DICE_5,
+    DICE_6,
+    DICE_ROT_1,
+    DICE_ROT_2
 };
 
 class Position {

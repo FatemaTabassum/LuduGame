@@ -15,8 +15,10 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <math.h>
+#include <time.h>
 #include "GameHelperObjects.h"
 #include "GameSimulator.hpp"
+#include <SOIL.h>
 
 
 using namespace std;
@@ -38,6 +40,7 @@ using namespace std;
 
 #endif
 extern Colors playerColor[];
+extern Dice dice;
 extern Colors playerTokenColor[];
 extern int numberOfTotalPlayers;
 extern vector <Player> playerCurrentlyPlayingList;

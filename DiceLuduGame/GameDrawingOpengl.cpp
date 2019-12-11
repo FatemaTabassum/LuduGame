@@ -7,6 +7,9 @@
 //
 
 #include "GameDrawingOpengl.hpp"
+
+#pragma mark globals
+
 /********* Global Variables **********/
 
 GLFWwindow *window;
@@ -27,9 +30,30 @@ bool firstTimeFlagBigSquare = true;
 bool firstTimeFlagPlayerSpecificSquare = true;
 int circleInWhichSquare = 0;
 double timeStampInSec = 0.1;
+int animationCnt = 0;
+bool running = true;
 
-Colors playerColor[] = {GREEN, YELLOW, CYAN, RED};
-Colors playerTokenColor[] = {DARKGREEN, PURPLE, DARKGREEN, BLACK};
+/******* Dice Images *********/
+
+int imgWidth = 64;
+int imgHeight = 64;
+unsigned char* image;
+GLuint textureID;
+
+const string diceImagePath1 = "/Users/liza/Downloads/img1.png";
+const string diceImagePath2 = "/Users/liza/Downloads/img2.png";
+const string diceImagePath3 = "/Users/liza/Downloads/img3.png";
+const string diceImagePath4 = "/Users/liza/Downloads/img4.png";
+const string diceImagePath5 = "/Users/liza/Downloads/img5.png";
+const string diceImagePath6 = "/Users/liza/Downloads/img6.png";
+const string diceImageRotatingPath1 = "/Users/liza/Downloads/rotating1.png";
+const string diceImageRotatingPath2 = "/Users/liza/Downloads/rotating2.png";
+
+/******** enum *******/
+
+Dice dice = DICE_1;
+Colors playerColor[] = {BLACKISHVIOLET, YELLOW, FEROZA, RED};
+Colors playerTokenColor[] = {LIGHTBROWN, PURPLE, LIGHTCYAN, BLACKISHVIOLET};
 
 vector <Square> smallSquareSharedPositionVector;
 vector <Square> smallSquarePlayerSpecificVector;
@@ -48,9 +72,11 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods);
 void addBackgroundAestheticWithFrame(int screenWidth, int screenHeight);
 void drawBigSquares();
 void drawSmallSquares();
-void drawDice();
+void drawDiceArea();
 void saveDiceArea();
-
+void drawImageInDiceArea(Dice dce);
+bool checkMouseIsInDiceArea(double xPos, double yPos);
+void animateDice();
 
 void saveBigSquares();
 void saveAllSqueares();
@@ -111,7 +137,22 @@ void setColor(Colors clr) {
             glColor3f (0.0, 0.0, 0.0 );  /* the current RGB color is BLACK: */
             break;
         case DICECOLOR:
-            glColor3f (0.8, 0.4, 0.0 );
+            glColor3f (1.0, 1.0, 1.0 ); /* White */
+            break;
+        case LIGHTBROWN:
+            glColor3f (0.9, 0.7, 0.3 ); /* White */
+            break;
+        case LIGHTCYAN:
+            glColor3f (0.8, 1.0, 1.0 ); /* White */
+            break;
+        case FEROZA:
+            glColor3f (0.0, 0.5, 0.5 ); /* White */
+            break;
+        case SKYCOLOR:
+            glColor3f (0.0, 0.4, 0.8 ); /* White */
+            break;
+        case BLACKISHVIOLET:
+            glColor3f (0.4, 0.4, 0.6 ); /* White */
             break;
         default:
             break;
@@ -152,24 +193,18 @@ void drawCircle( GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint numberOf
     int i;
     int triangleAmount = 1000;
     GLfloat twicePi = 2.0f * 3.1415;
-    glEnable(GL_LINE_SMOOTH);
-    
-    setColor(playerTokenColor[playerId]);
-    glLineWidth(5.0);
     
     glBegin(GL_LINES);
     setColor(playerTokenColor[playerId]);
-    //glColor4f(1.0, 0.0, 0.0, 1.0);
-    for(i = 0; i < triangleAmount; i++)
-    {
+    glLineWidth(5.0);
+    for(i = 0; i < triangleAmount; i++) {
         glVertex2f( x, y);
         glVertex2f(x + (radius * cos(i * twicePi / triangleAmount)), y + (radius * sin(i * twicePi / triangleAmount)));
     }
     glEnd();
-    
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer(3, GL_FLOAT, 0, allCircleVertices);
-    setColor(playerTokenColor[(playerId+1)%4]);
+    setColor(BLACK);
     glDrawArrays(GL_LINE_STRIP, 0, numberOfVertices);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -208,12 +243,12 @@ void render_opengl() {
     saveDiceArea();
     createAndInitPlayers(numberOfTotalPlayers);
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0,0.0,0.0,1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         addBackgroundAestheticWithFrame(screenWidth, screenHeight);
         drawGameBoards(screenWidth, screenHeight);
         simulateGame();
         drawTokens();
-        drawDice();
         //drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 20, 36, NONE);
         //Swap front and back buffers
         glfwSwapBuffers(window);
@@ -226,7 +261,8 @@ void render_opengl() {
 void drawGameBoards(int screenWidth, int screenHeight) {
     drawBigSquares();
     drawSmallSquares();
-    drawDice();
+    drawDiceArea();
+    drawImageInDiceArea(dice);
 }
 
 #pragma mark Event
@@ -260,10 +296,60 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
     //        cout << "Left Button Released " << endl;
     //        //cout << currentMousePos.xPos << "  " << currentMousePos.yPos << endl;
     //    }
+    
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
-    srand(NULL);
-    currentPlayerId = rand() % 5;
+    bool check = checkMouseIsInDiceArea(xPos, yPos);
+    if (check &&
+        button == GLFW_MOUSE_BUTTON_LEFT &&
+        action == GLFW_RELEASE) {
+        srand(time(0));
+        currentPlayerId = rand() % 5;
+        dice = static_cast<Dice>((rand() % 6) + 1);
+        cout << "DICE_VALUE_IS " << dice << endl;
+        animationCnt = 0;
+        running = true;
+        //animateDice();
+        drawImageInDiceArea(dice);
+    }
+}
+
+
+void animateDice() {
+    double previous = glfwGetTime();
+    double waitTime = 2.0;
+    double totalWaitTime = 10 * waitTime;
+    double now;
+    while (running) {
+        
+        float delta = now - previous;
+        previous = now;
+        
+        // for each timer do this
+        waitTime -= delta;
+        if (waitTime <= 0.f)
+        {
+            if (animationCnt % 2 ) {
+                drawImageInDiceArea(DICE_ROT_1);
+            } else {
+                drawImageInDiceArea(DICE_ROT_2);
+            }
+            animationCnt++;
+        }
+        if (animationCnt == 10) {
+            running = false;
+        }
+    }
+}
+
+bool checkMouseIsInDiceArea(double xPos, double yPos) {
+    if (xPos >= diceSquare.getLeftUpperPos().getxPos() &&
+        xPos <= diceSquare.getRightUpperPos().getxPos() &&
+        yPos >= diceSquare.getLeftBottomPos().getyPos() &&
+        yPos <= diceSquare.getLeftUpperPos().getyPos()) {
+        return true;
+    }
+    return false;
 }
 
 #pragma make Background color White
@@ -365,14 +451,14 @@ void drawSmallSquares() {
 
 #pragma mark Draw Dice
 
-
 void saveDiceArea() {
     diceSquare.setLeftBottomPos(bigSquareVector[0].getRightUpperPos());
     diceSquare.setLeftUpperPos(bigSquareVector[1].getRightBottomPos());
     diceSquare.setRightUpperPos(bigSquareVector[2].getLeftBottomPos());
     diceSquare.setRightBottomPos(bigSquareVector[3].getLeftUpperPos());
 }
-void drawDice() {
+
+void drawDiceArea() {
     GLfloat allRectVertices[] = {
         diceSquare.getLeftBottomPos().getxPos(), diceSquare.getLeftBottomPos().getyPos(), 0,
         diceSquare.getRightBottomPos().getxPos(), diceSquare.getRightBottomPos().getyPos(), 0,
@@ -380,6 +466,71 @@ void drawDice() {
         diceSquare.getLeftUpperPos().getxPos(), diceSquare.getLeftUpperPos().getyPos(), 0
     };
     drawShape(allRectVertices, DICECOLOR , GL_POLYGON);
+}
+
+
+#pragma mark Draw Image
+
+void drawImageInDiceArea(Dice dce) {
+    
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(1, &textureID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    switch (dce) {
+        case DICE_1:
+            image = SOIL_load_image(diceImagePath1.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_2:
+            image = SOIL_load_image(diceImagePath2.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_3:
+            image = SOIL_load_image(diceImagePath3.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_4:
+            image = SOIL_load_image(diceImagePath4.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_5:
+            image = SOIL_load_image(diceImagePath5.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_6:
+            image = SOIL_load_image(diceImagePath6.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_ROT_1:
+            image = SOIL_load_image(diceImageRotatingPath1.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        case DICE_ROT_2:
+            image = SOIL_load_image(diceImageRotatingPath2.c_str(), &imgWidth, &imgHeight, 0, SOIL_LOAD_RGBA);
+            break;
+        default:
+            break;
+    }
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    
+    SOIL_free_image_data(image);
+    
+    /* check for an error during the load process */
+    if (textureID <= 0) {
+        printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
+        return;
+    }
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex2f(diceSquare.getLeftBottomPos().getxPos(), diceSquare.getLeftBottomPos().getyPos());
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2f( diceSquare.getRightBottomPos().getxPos(), diceSquare.getRightBottomPos().getyPos());
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2f( diceSquare.getRightUpperPos().getxPos(), diceSquare.getRightUpperPos().getyPos());
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2f(diceSquare.getLeftUpperPos().getxPos(), diceSquare.getLeftUpperPos().getyPos());
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 
@@ -1276,7 +1427,7 @@ void printNumOfSquares(){
     cout << " bigSquareVector.size()  " << bigSquareVector.size() << endl;
 }
 
-void animateToken(){
+void animateToken() {
     double time = glfwGetTime();
     if((timeStampInSec+0.1) < time) {
         timeStampInSec = time;
