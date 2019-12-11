@@ -356,6 +356,8 @@ void parsePlayInviteMessage(string messageBody){
     shouldStartGame = true;
     
     printf("Signaling condition variable cond1\n");
+#warning liza add in a function
+    numberOfTotalPlayers = stoi(num_of_players); // add in a function
     pthread_cond_signal(&cond1);
     printf("thread cond1\n");
     //startPlayingGame(stoi(num_of_players), fromuser);

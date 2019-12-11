@@ -32,11 +32,10 @@ void createAndInitPlayers(int num_of_players){
     }
 }
 
-void startPlayingGame(int numberOfOnlinePlayers, string username) {
-    gameInitialSetup();
-    createAndInitPlayers(numberOfOnlinePlayers);
-    //rurender_opengl();
-}
+//void startPlayingGame(int numberOfOnlinePlayers, string username) {
+//    createAndInitPlayers(numberOfOnlinePlayers);
+//    //render_opengl();
+//}
 
 void simulateGame() {
     int rnd;

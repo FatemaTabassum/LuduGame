@@ -22,7 +22,7 @@ const GLfloat numberOfBigSquare = 4;
 int screenWidth, screenHeight, gameScreenWidth, gameScreenheight;
 Position currentMousePos;
 const float radius = 20;
-int numberOfTotalPlayers = 4;
+int numberOfTotalPlayers = 0;
 vector <Player> playerCurrentlyPlayingList;
 float cursorPosX, cursorPosY;
 bool firstTimeFlagSmallSharedSquare = true;
@@ -64,7 +64,6 @@ Square diceSquare;
 #pragma mark functions Prototype
 int initialize_window();
 void render_opengl();
-void gameInitialSetup();
 void drawGameBoards(int screenWidth, int screenHeight);
 void setColor(Colors clr);
 void addEventToTheScreen();
@@ -236,17 +235,10 @@ void renderSmallSquare( Position leftBottom, Position rightBottom, Position righ
     }
 }
 
-#pragma mark Game Initial Setup after Server Call
-
-void gameInitialSetup() {
-    saveAllSqueares();
-    saveDiceArea();
-}
-
-
 #pragma mark Render Opengl
 void render_opengl() {
-    gameInitialSetup();
+    saveAllSqueares();
+    saveDiceArea();
     createAndInitPlayers(numberOfTotalPlayers);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0,0.0,0.0,1.0);

@@ -12,15 +12,17 @@
 using namespace std;
 
 
+#pragma mark Globals
 pthread_t tid;
 RunClientParameters * runClientParams;
 RunClientParameters  runClien;
-
 // Declaration of thread condition variable
 pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
-
 // declaring mutex
 pthread_mutex_t lock_1 = PTHREAD_MUTEX_INITIALIZER;
+
+#pragma mark Function Prototypes
+void startOpenglAndGame();
 
 void takeInput() {
     string serverHost;
@@ -44,10 +46,16 @@ void takeInput() {
     pthread_mutex_unlock(&lock_1); 
     
     cout<<"main"<<endl;
-        if (initialize_window() == 1) {
-            cout << "Error initiliza window" <<endl;
-        }
-        addEventToTheScreen();
-        render_opengl();
+    startOpenglAndGame();
     (void)pthread_join(tid, NULL);
+}
+
+
+void startOpenglAndGame() {
+    shouldStartGame = true;
+    if (initialize_window() == 1) {
+        cout << "Error initiliza window" <<endl;
+    }
+    addEventToTheScreen();
+    render_opengl();
 }

@@ -19,6 +19,6 @@
 extern int currentPlayerId;
 
 void createAndInitPlayers(int num_of_players);
-void startPlayingGame(int numberOfOnlinePlayers, string username);
+//void startPlayingGame(int numberOfOnlinePlayers, string username);
 void simulateGame();
 #endif /* GameSimulator_hpp */
