@@ -246,8 +246,8 @@ void gameInitialSetup() {
 
 #pragma mark Render Opengl
 void render_opengl() {
-    //gameInitialSetup();
-    //createAndInitPlayers(numberOfTotalPlayers);
+    gameInitialSetup();
+    createAndInitPlayers(numberOfTotalPlayers);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0,0.0,0.0,1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

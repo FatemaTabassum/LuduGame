@@ -16,7 +16,13 @@ pthread_t tid;
 RunClientParameters * runClientParams;
 RunClientParameters  runClien;
 
-void takeInput(){
+// Declaration of thread condition variable
+pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+
+// declaring mutex
+pthread_mutex_t lock_1 = PTHREAD_MUTEX_INITIALIZER;
+
+void takeInput() {
     string serverHost;
     int servers_port_num, peers_port_num;
     //take server's hostname,
@@ -29,6 +35,19 @@ void takeInput(){
     runClien.serverPort = servers_port_num;
     runClien.serverName = serverHost;
     runClientParams = &runClien;
+    
+    
+    pthread_mutex_lock(&lock_1);
     pthread_create(&tid, NULL, &runClient, (void*) runClientParams);
+    pthread_cond_wait(&cond1, &lock_1);
+    
+    pthread_mutex_unlock(&lock_1); 
+    
+    cout<<"main"<<endl;
+        if (initialize_window() == 1) {
+            cout << "Error initiliza window" <<endl;
+        }
+        addEventToTheScreen();
+        render_opengl();
     (void)pthread_join(tid, NULL);
 }

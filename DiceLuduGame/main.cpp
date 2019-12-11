@@ -5,13 +5,13 @@
 
 using namespace std;
 
-
 void libraryInitialization();
 
 #pragma mark Main
 int main(void) {
     
     takeInput();
+    cout<<"main"<<endl;
 //    if (initialize_window() == 1) {
 //        return -1;
 //    }

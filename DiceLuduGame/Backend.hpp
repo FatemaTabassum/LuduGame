@@ -12,6 +12,13 @@
 #include <stdio.h>
 #include "Friend.hpp"
 #include <pthread.h>
+#include <unistd.h>
+
+// Declaration of thread condition variable
+extern pthread_cond_t cond1;
+
+// declaring mutex
+extern pthread_mutex_t lock;
 
 void takeInput();
 

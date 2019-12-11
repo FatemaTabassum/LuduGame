@@ -13,6 +13,9 @@
 
 using namespace std;
 
+bool shouldStartGame = false;
+bool isGameRunning = false;
+
 
 Position::Position() {
     

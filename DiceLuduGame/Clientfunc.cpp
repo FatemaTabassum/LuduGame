@@ -353,7 +353,12 @@ void parsePlayInviteMessage(string messageBody){
     
     cout<<"Invited by: "<<fromuser<<", total players: "<<stoi(num_of_players)<<endl;
     //Now you can start the Game haha
-    startPlayingGame(stoi(num_of_players), fromuser);
+    shouldStartGame = true;
+    
+    printf("Signaling condition variable cond1\n");
+    pthread_cond_signal(&cond1);
+    printf("thread cond1\n");
+    //startPlayingGame(stoi(num_of_players), fromuser);
     
 }
 /*************Parsing Friend Location Message****************/

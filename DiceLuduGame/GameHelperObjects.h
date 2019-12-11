@@ -53,6 +53,9 @@ struct RunClientParameters {
     int serverPort;
 };
 
+extern bool shouldStartGame;
+extern bool isGameRunning;
+
 class Position {
 private:
     //float xPos2;

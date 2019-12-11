@@ -30,6 +30,7 @@
 #include <netdb.h>
 #include <unordered_map>
 #include <unordered_set>
+#include "Backend.hpp"
 #include "GameSimulator.hpp"
 
 using namespace std;
