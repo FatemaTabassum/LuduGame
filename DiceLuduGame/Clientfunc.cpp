@@ -332,7 +332,7 @@ void parseInviteMessage(string messageBody)
 
 void parsePlayInviteMessage(string messageBody){
     cout<<"Got an invitaiton to play: "<<messageBody<<endl;
-    string s,fromuser, num_of_players;
+    string s,fromuser, num_of_players, listOfPlayers;
     istringstream mesageBodyStream(messageBody);
     istringstream valueStream("");
     while(getline(mesageBodyStream,s,MAIN_DELIM))
@@ -340,7 +340,7 @@ void parsePlayInviteMessage(string messageBody){
         valueStream.clear();
         valueStream.str(s);
         getline(valueStream,s,VALUE_DELIM);
-        if(s.compare(VALUE_TYPE_USERNAME)==0)
+        if(s.compare(VALUE_TYPE_CURRENT_PLAYER)==0)
         {
             getline(valueStream,fromuser,VALUE_DELIM);
         }
@@ -348,21 +348,48 @@ void parsePlayInviteMessage(string messageBody){
         {
             getline(valueStream,num_of_players,VALUE_DELIM);
         }
+        else if(s.compare(VALUE_TYPE_LIST_OF_PLAYERS)==0)
+        {
+            getline(valueStream,listOfPlayers,VALUE_DELIM);
+        }
         
     }
+    istringstream mesageBodyStreamPlayer(listOfPlayers); string st;
+    playersStringVector.clear();
+    while(getline(mesageBodyStreamPlayer, st,PLAYERS_DELIM))
+    {
+        playersStringVector.push_back(st);
+    }
     
-    cout<<"Invited by: "<<fromuser<<", total players: "<<stoi(num_of_players)<<endl;
+    //cout<<"Invited by: "<<fromuser<<", total players: "<<stoi(num_of_players)<<endl;
     //Now you can start the Game haha
     shouldStartGame = true;
     
-    printf("Signaling condition variable cond1\n");
-#warning liza add in a function
-    numberOfTotalPlayers = stoi(num_of_players); // add in a function
+    // update player status
+    
+    numberOfTotalPlayers = stoi(num_of_players);
+    currentPlayerUsername = fromuser;
+    myUsername = username;
+    bool usrnameFlag = false;
+    for (int i = 0; i < playersStringVector.size(); i++) {
+        if (playersStringVector[i].compare(myUsername)) {
+            cout << "Your Turn" << endl;
+            usrnameFlag = true;
+            mouseClickAvailable = true;
+            break;
+        }
+    }
+    if (!usrnameFlag) {
+        cout << currentPlayerUsername << "'s Turn" << endl;
+        mouseClickAvailable = false;
+    }
     pthread_cond_signal(&cond1);
     printf("thread cond1\n");
     //startPlayingGame(stoi(num_of_players), fromuser);
     
 }
+
+
 /*************Parsing Friend Location Message****************/
 
 void parseFriendLocationMessage(string messageBody)

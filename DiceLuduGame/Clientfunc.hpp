@@ -40,6 +40,7 @@ using namespace std;
 #define OPTYPE_DELIM '~'
 #define MAIN_DELIM '|'
 #define VALUE_DELIM ':'
+#define PLAYERS_DELIM ';'
 #define OP_TYPE_LOGIN "login"
 #define OP_TYPE_REGISTER "register"
 #define OP_TYPE_LOCATION "location"
@@ -56,6 +57,9 @@ using namespace std;
 #define VALUE_TYPE_FROMUSER "fromuser"
 #define VALUE_TYPE_TOUSER "touser"
 #define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
+#define VALUE_TYPE_CURRENT_PLAYER "currentplayer"
+#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
+#define VALUE_TYPE_LIST_OF_PLAYERS "listofplayers"
 
 
 void *runClient(void * arg);

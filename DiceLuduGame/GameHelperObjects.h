@@ -99,7 +99,8 @@ private:
     unsigned int player_id;
     Position pos;
     vector< Token > tokenList;
-    bool homeway;
+    bool isHome;
+    string username;
     //player has attribute of type class Position
     
 public:
@@ -115,8 +116,10 @@ public:
     void setTokenList(vector <Token> list);
     unsigned int getPlayer_id();
     void initializeTokenList(Colors tokenColor);
-    void setHomeway(bool homeway);
-    bool getHomeway();
+    void setIsHome(bool isHome);
+    bool getIsHome();
+    void setUsername(string username);
+    string getUsername();
     vector<Token> getTokenList();
 };
 

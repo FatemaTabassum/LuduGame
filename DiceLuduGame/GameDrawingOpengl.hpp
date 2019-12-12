@@ -42,7 +42,6 @@ using namespace std;
 extern Colors playerColor[];
 extern Dice dice;
 extern Colors playerTokenColor[];
-extern int numberOfTotalPlayers;
 extern vector <Player> playerCurrentlyPlayingList;
 extern const GLfloat smallSquareLength;
 extern const GLfloat bigSquareLength;

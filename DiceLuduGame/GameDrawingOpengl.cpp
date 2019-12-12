@@ -22,7 +22,6 @@ const GLfloat numberOfBigSquare = 4;
 int screenWidth, screenHeight, gameScreenWidth, gameScreenheight;
 Position currentMousePos;
 const float radius = 20;
-int numberOfTotalPlayers = 0;
 vector <Player> playerCurrentlyPlayingList;
 float cursorPosX, cursorPosY;
 bool firstTimeFlagSmallSharedSquare = true;
@@ -32,6 +31,9 @@ int circleInWhichSquare = 0;
 double timeStampInSec = 0.1;
 int animationCnt = 0;
 bool running = true;
+
+
+
 
 /******* Dice Images *********/
 
@@ -297,18 +299,20 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
     
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
-    bool check = checkMouseIsInDiceArea(xPos, yPos);
-    if (check &&
-        button == GLFW_MOUSE_BUTTON_LEFT &&
-        action == GLFW_RELEASE) {
-        srand(time(0));
-        currentPlayerId = rand() % 5;
-        dice = static_cast<Dice>((rand() % 6) + 1);
-        cout << "DICE_VALUE_IS " << dice << endl;
-        animationCnt = 0;
-        running = true;
-        //animateDice();
-        drawImageInDiceArea(dice);
+    if (mouseClickAvailable == true) {
+        bool check = checkMouseIsInDiceArea(xPos, yPos);
+        if (check &&
+            button == GLFW_MOUSE_BUTTON_LEFT &&
+            action == GLFW_RELEASE) {
+            srand(time(0));
+            currentPlayerId = rand() % 5;
+            dice = static_cast<Dice>((rand() % 6) + 1);
+            cout << "DICE_VALUE_IS " << dice << endl;
+            mouseClickAvailable = false;
+
+            //running = true;
+            //drawImageInDiceArea(dice);
+        }
     }
 }
 

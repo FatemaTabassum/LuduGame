@@ -14,6 +14,14 @@ using namespace std;
 #pragma mark Globals
 int currentPlayerId = -1;
 
+// Client information , from server
+int numberOfTotalPlayers = 0;
+string currentPlayerUsername = "";
+vector <string> playersStringVector;
+vector <Player> playersVector;
+bool mouseClickAvailable;
+string myUsername = "";
+
 #pragma mark TEST
 int numberOfOnlinePlayers = 0;
 
@@ -26,6 +34,8 @@ void createAndInitPlayers(int num_of_players){
     for(int i=0;i<num_of_players;i++){
         Player newPlayer;
         newPlayer = Player(i);
+        newPlayer.setUsername(playersStringVector[i]);
+        newPlayer.setIsHome(true);
         newPlayer.setColor(playerColor[i]);
         newPlayer.initializeTokenList(playerTokenColor[i]);
         playerCurrentlyPlayingList.push_back(newPlayer);
@@ -40,25 +50,28 @@ void createAndInitPlayers(int num_of_players){
 void simulateGame() {
     int rnd;
     for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
-        if (i == currentPlayerId) {
-            rnd = getRandomNumber();
-            rnd = 6;
-            Player player = playerCurrentlyPlayingList[i];
-            vector<Token> tokList =  player.getTokenList();
-            Token tok = tokList[0]; // since we have given only one token playing right now.
-            
-            if (rnd == 6 && player.getHomeway() == false) {
-                int nextSquareForToken = 13 * i + 1; // first square to start for player is defined by the equeation 13 * n + 1
-                
-                float midX = smallSquareSharedPositionVector[nextSquareForToken].getmidX();
-                float midY = smallSquareSharedPositionVector[nextSquareForToken].getmidY();
-                tok.setPos(Position(midX, midY));
-                tokList.clear();
-                tokList.push_back(tok);
-                playerCurrentlyPlayingList[i].setTokenList(tokList);
-            }
-            currentPlayerId++;
-        }
+        Player player = playerCurrentlyPlayingList[i];
+//        if (player.getUsername().compare(currentPlayerUsername) == 0 ) {
+//        }
+//        if (i == currentPlayerId) {
+//            rnd = getRandomNumber();
+//            rnd = 6;
+//            Player player = playerCurrentlyPlayingList[i];
+//            vector<Token> tokList =  player.getTokenList();
+//            Token tok = tokList[0]; // since we have given only one token playing right now.
+//
+//            if (rnd == 6 && player.getIsHome() == true) {
+//                int nextSquareForToken = 13 * i + 1; // first square to start for player is defined by the equeation 13 * n + 1
+//
+//                float midX = smallSquareSharedPositionVector[nextSquareForToken].getmidX();
+//                float midY = smallSquareSharedPositionVector[nextSquareForToken].getmidY();
+//                tok.setPos(Position(midX, midY));
+//                tokList.clear();
+//                tokList.push_back(tok);
+//                playerCurrentlyPlayingList[i].setTokenList(tokList);
+//            }
+//            currentPlayerId++;
+//        }
     }
 }
 

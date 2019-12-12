@@ -101,13 +101,13 @@ Player::Player() {
 }
 Player::Player(unsigned int player_id) {
     this->player_id = player_id;
-    this->homeway = false;
+    this->isHome = false;
 }
 Player::Player(Position p) {
     pos = pos;
     posindex = 0;
     status = 0;
-    homeway = false;
+    isHome = false;
 }
 void Player:: setPosition(int pindex,Position p) {
     posindex = pindex;
@@ -121,12 +121,19 @@ void Player:: setTokenList(vector <Token> list) {
     this->tokenList = list;
 }
 
-void Player:: setHomeway(bool homeway){
-    this->homeway = homeway;
+void Player:: setIsHome(bool isHome){
+    this->isHome = isHome;
 }
 
-bool Player:: getHomeway(){
-    return this->homeway;
+bool Player:: getIsHome(){
+    return this->isHome;
+}
+
+void Player:: setUsername(string username) {
+    this->username = username;
+}
+string Player:: getUsername() {
+    return this->username;
 }
 
 unsigned int Player:: getPlayer_id() {
