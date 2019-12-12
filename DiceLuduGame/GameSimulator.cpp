@@ -29,6 +29,14 @@ int numberOfOnlinePlayers = 0;
 
 int getRandomNumber();
 
+void initializeConstantsValues() {
+    numberOfTotalPlayers = 0;
+    currentPlayerUsername = "";
+    playersVector.clear();
+    mouseClickAvailable = false;;
+    myUsername = "";
+}
+
 void createAndInitPlayers(int num_of_players){
     playerCurrentlyPlayingList.clear();
     for(int i=0;i<num_of_players;i++){

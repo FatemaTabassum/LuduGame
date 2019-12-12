@@ -332,6 +332,8 @@ void parseInviteMessage(string messageBody)
 
 void parsePlayInviteMessage(string messageBody){
     cout<<"Got an invitaiton to play: "<<messageBody<<endl;
+    // Class: GameSimulator
+    initializeConstantsValues();
     string s,fromuser, num_of_players, listOfPlayers;
     istringstream mesageBodyStream(messageBody);
     istringstream valueStream("");
@@ -352,8 +354,8 @@ void parsePlayInviteMessage(string messageBody){
         {
             getline(valueStream,listOfPlayers,VALUE_DELIM);
         }
-        
     }
+    
     istringstream mesageBodyStreamPlayer(listOfPlayers); string st;
     playersStringVector.clear();
     while(getline(mesageBodyStreamPlayer, st,PLAYERS_DELIM))
@@ -363,16 +365,16 @@ void parsePlayInviteMessage(string messageBody){
     
     //cout<<"Invited by: "<<fromuser<<", total players: "<<stoi(num_of_players)<<endl;
     //Now you can start the Game haha
+    initializeConstantsValues();
     shouldStartGame = true;
     
     // update player status
-    
     numberOfTotalPlayers = stoi(num_of_players);
     currentPlayerUsername = fromuser;
     myUsername = username;
     bool usrnameFlag = false;
     for (int i = 0; i < playersStringVector.size(); i++) {
-        if (playersStringVector[i].compare(myUsername)) {
+        if ((playersStringVector[i].compare(myUsername)) == 0) {
             cout << "Your Turn" << endl;
             usrnameFlag = true;
             mouseClickAvailable = true;

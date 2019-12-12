@@ -29,4 +29,5 @@ extern string myUsername;
 void createAndInitPlayers(int num_of_players);
 //void startPlayingGame(int numberOfOnlinePlayers, string username);
 void simulateGame();
+void initializeConstantsValues();
 #endif /* GameSimulator_hpp */
