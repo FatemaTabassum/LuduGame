@@ -43,7 +43,7 @@ void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
             int nextSquareForToken;
             if (playerCurrentlyPlayingList[i].getIsHome() == true) {
                 playerCurrentlyPlayingList[i].setIsHome(false);
-                nextSquareForToken = 13 * i + diceValue;
+                nextSquareForToken = 13 * i + 1 + diceValue;
             } else {
                 nextSquareForToken = tok.getSquareNumber() + diceValue;
             }
@@ -55,7 +55,6 @@ void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
             toklist.push_back(tok);
             playerCurrentlyPlayingList[i].setTokenList(toklist);
             break;
-
         }
     }
 }

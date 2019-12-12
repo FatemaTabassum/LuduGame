@@ -652,6 +652,8 @@ void makeAndStorePlayerSpecificSquare(vector <Position> &posVect) {
 void window_close_callback(GLFWwindow* window)
 {
     glfwSetWindowShouldClose(window, GLFW_FALSE);
+    logoutFromServer(false);
+    close(serverSockfd);
     exit(0);
 }
 

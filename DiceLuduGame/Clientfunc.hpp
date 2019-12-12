@@ -101,6 +101,18 @@ void *processServerConection(void *arg);
 void *process_connection(void *arg);
 
 
+/************** Global Variables *************/
+
+extern int serverSockfd;
+extern int peerServport;
+extern string username;
+extern vector<int> peerSockVector;
+extern unordered_map <string,Friend> onlineFriends;
+extern unordered_set <string> inviterUsers;
+extern bool userLoggedIn;
+
+/************** Global Variables *************/
+
 
 
 /*************** Game Methods ****************/
