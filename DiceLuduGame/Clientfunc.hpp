@@ -46,7 +46,22 @@ using namespace std;
 #define OP_TYPE_LOCATION "location"
 #define OP_TYPE_MESSAGE "message"
 #define OP_TYPE_INVITE "invite"
+
+/********* Game **********/
 #define OP_TYPE_PLAY "play"
+#define OP_TYPE_MOVE "move"
+
+
+#define VALUE_TYPE_CURRENT_PLAYER "currentplayer"
+#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
+#define VALUE_TYPE_LIST_OF_PLAYERS "listofplayers"
+#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
+#define VALUE_TYPE_PREVIOUS_PLAYER "previousplayer"
+#define VALUE_TYPE_DICE "dice"
+#define VALUE_TYPE_TOKEN_NO "tokenno"
+/********** End *********/
+
+
 #define OP_TYPE_ACCEPT_INVITE "accept_invite"
 #define OP_TYPE_LOGOUT "logout"
 #define VALUE_TYPE_USERNAME "username"
@@ -56,10 +71,6 @@ using namespace std;
 #define VALUE_TYPE_MESSAGE "message"
 #define VALUE_TYPE_FROMUSER "fromuser"
 #define VALUE_TYPE_TOUSER "touser"
-#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
-#define VALUE_TYPE_CURRENT_PLAYER "currentplayer"
-#define VALUE_TYPE_NUM_OF_PLAYERS "numofplayers"
-#define VALUE_TYPE_LIST_OF_PLAYERS "listofplayers"
 
 
 void *runClient(void * arg);
@@ -89,7 +100,19 @@ void *acceptPeerConnection(void *arg);
 void *processServerConection(void *arg);
 void *process_connection(void *arg);
 
+
+
+
+/*************** Game Methods ****************/
+
+void createAndSendPacketMove(Dice dice);
+string createMovePayload(Dice dice, string message);
+void parseTokenMoveMessage(string messageBody);
+
+
 string createReqToStartPayload(string targetUsername, string message);
 void parsePlayInviteMessage(string messageBody);
+/************** End ***********/
+
 #endif /* Clientfunc_hpp */
 

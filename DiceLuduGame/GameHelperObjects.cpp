@@ -47,12 +47,12 @@ Token::Token() {
 }
 Token::Token(unsigned int token_id) {
     this->token_id = token_id;
-    this->isHome = true;
+    this->squareNumber = -1;
 }
 Token::Token (Position pos, unsigned int token_id, bool isHome ) {
     this->pos = pos;
     this->token_id = token_id;
-    this->isHome = isHome;
+    this->squareNumber = -1;
 }
 void Token::setPos(Position pos) {
     this->pos = pos;
@@ -62,12 +62,6 @@ void Token::setTokenId(unsigned int id) {
 }
 unsigned int Token::getTokenId() {
     return this->token_id;
-}
-bool Token::getIsHome() {
-    return isHome;
-}
-void Token::setIsHome(bool isHome) {
-    this->isHome = isHome;
 }
 Position Token::getPos() {
     return  this->pos;
@@ -81,6 +75,12 @@ void Token::setTokenColor(Colors color){
 }
 Colors  Token::getTokenColor() {
     return this->tokenColor;
+}
+void Token::setSquareNumber(int n){
+    this->squareNumber = n;
+}
+int Token::getSquareNumber() {
+    return this->squareNumber;
 }
 
 //class Player {

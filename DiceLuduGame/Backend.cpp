@@ -50,7 +50,6 @@ void takeInput() {
     (void)pthread_join(tid, NULL);
 }
 
-
 void startOpenglAndGame() {
     shouldStartGame = true;
     if (initialize_window() == 1) {

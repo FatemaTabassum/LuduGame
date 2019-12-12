@@ -76,8 +76,8 @@ class Token {
 private:
     Position pos;
     unsigned int token_id;
-    bool isHome;
     Colors tokenColor;
+    int squareNumber;
 public:
     Token();
     Token(unsigned int token_id);
@@ -91,6 +91,8 @@ public:
     void setTokenColor(Colors color);
     Colors  getTokenColor();
     unsigned int getToken_id();
+    void setSquareNumber(int n);
+    int getSquareNumber();
 };
 
 

@@ -18,6 +18,7 @@
 #include <time.h>
 #include "GameHelperObjects.h"
 #include "GameSimulator.hpp"
+#include "Clientfunc.hpp"
 #include <SOIL.h>
 
 

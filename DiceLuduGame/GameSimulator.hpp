@@ -21,13 +21,12 @@ extern int currentPlayerId;
 // Client information from servers
 extern int numberOfTotalPlayers;
 extern string currentPlayerUsername;
-extern vector <Player> playersVector;
 extern vector <string> playersStringVector;
 extern bool mouseClickAvailable;
-extern string myUsername;
 
 void createAndInitPlayers(int num_of_players);
 //void startPlayingGame(int numberOfOnlinePlayers, string username);
 void simulateGame();
 void initializeConstantsValues();
+void updateValueOfPreviousPlayer(string previousPlayer, int diceValue);
 #endif /* GameSimulator_hpp */

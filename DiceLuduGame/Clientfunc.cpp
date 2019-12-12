@@ -18,6 +18,17 @@ unordered_map <string,Friend> onlineFriends;
 unordered_set <string> inviterUsers;
 bool userLoggedIn=false;
 
+/*************** Game Methods ****************/
+
+void createAndSendPacketMove(Dice dice) {
+    string payloadString = createMovePayload(dice, "0");
+    cout<< "Move is being made: "<<payloadString<<endl;
+    write(serverSockfd, payloadString.c_str(), strlen(payloadString.c_str())+1);
+}
+
+/************** End ************************/
+
+
 /*************Main Function*************/
 
 void *runClient(void * arg) {
@@ -280,6 +291,12 @@ void parseServerMessage(int sockfd,char *buf)
         getline(message,messageBody,OPTYPE_DELIM);
         parsePlayInviteMessage(messageBody);
     }
+    else if(messageBody.compare(OP_TYPE_MOVE)==0)
+    {
+        cout << "move " << messageBody << endl;
+        getline(message,messageBody,OPTYPE_DELIM);
+        parseTokenMoveMessage(messageBody);
+    }
     message.clear();
 }
 
@@ -330,9 +347,65 @@ void parseInviteMessage(string messageBody)
 
 /*******************Parsing Play Message*********************/
 
+void parseTokenMoveMessage(string messageBody) {
+    string s,previousPlayer, diceValue, tokenValue, listOfPlayers, num_of_total_players;
+    istringstream mesageBodyStream(messageBody);
+    istringstream valueStream("");
+    //buffer<<OP_TYPE_MOVE<<OPTYPE_DELIM<<VALUE_TYPE_PREVIOUS_PLAYER<<VALUE_DELIM<<username<<MAIN_DELIM<<VALUE_TYPE_DICE<<VALUE_DELIM<<to_string(dice)<<MAIN_DELIM<<VALUE_TYPE_TOKEN_NO<<VALUE_DELIM<<"0";
+    
+    while(getline(mesageBodyStream,s,MAIN_DELIM))
+    {
+        valueStream.clear();
+        valueStream.str(s);
+        getline(valueStream,s,VALUE_DELIM);
+        if(s.compare(VALUE_TYPE_PREVIOUS_PLAYER)==0)
+        {
+            getline(valueStream,previousPlayer,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_DICE)==0)
+        {
+            getline(valueStream,diceValue,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_TOKEN_NO)==0)
+        {
+            getline(valueStream,tokenValue,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_CURRENT_PLAYER)==0)
+        {
+            getline(valueStream,currentPlayerUsername,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_NUM_OF_PLAYERS)==0)
+        {
+            getline(valueStream,num_of_total_players,VALUE_DELIM);
+        }
+        else if(s.compare(VALUE_TYPE_LIST_OF_PLAYERS)==0)
+        {
+            getline(valueStream,listOfPlayers,VALUE_DELIM);
+        }
+    }
+    
+    istringstream mesageBodyStreamPlayer(listOfPlayers); string st;
+    playersStringVector.clear();
+    while(getline(mesageBodyStreamPlayer, st,PLAYERS_DELIM))
+    {
+        playersStringVector.push_back(st);
+    }
+    numberOfTotalPlayers = stoi(num_of_total_players);
+    if ((currentPlayerUsername.compare(username)) == 0) {
+        cout << "Your Turn" << endl;
+        mouseClickAvailable = true;
+    } else {
+        cout << currentPlayerUsername << "'s Turn" << endl;
+        mouseClickAvailable = false;
+    }
+    updateValueOfPreviousPlayer(previousPlayer, stoi(diceValue));
+    
+    cout << "finished updating" << endl;
+}
+
 void parsePlayInviteMessage(string messageBody){
     cout<<"Got an invitaiton to play: "<<messageBody<<endl;
-    // Class: GameSimulator
+    // this method from Class: GameSimulator
     initializeConstantsValues();
     string s,fromuser, num_of_players, listOfPlayers;
     istringstream mesageBodyStream(messageBody);
@@ -371,21 +444,16 @@ void parsePlayInviteMessage(string messageBody){
     // update player status
     numberOfTotalPlayers = stoi(num_of_players);
     currentPlayerUsername = fromuser;
-    myUsername = username;
-    bool usrnameFlag = false;
-    for (int i = 0; i < playersStringVector.size(); i++) {
-        if ((playersStringVector[i].compare(myUsername)) == 0) {
-            cout << "Your Turn" << endl;
-            usrnameFlag = true;
-            mouseClickAvailable = true;
-            break;
-        }
-    }
-    if (!usrnameFlag) {
+    
+    if ((currentPlayerUsername.compare(username)) == 0) {
+        cout << "Your Turn" << endl;
+        mouseClickAvailable = true;
+    } else {
         cout << currentPlayerUsername << "'s Turn" << endl;
         mouseClickAvailable = false;
     }
     pthread_cond_signal(&cond1);
+
     printf("thread cond1\n");
     //startPlayingGame(stoi(num_of_players), fromuser);
     
@@ -612,11 +680,26 @@ string createInvitePayload(string targetUsername, string message)
 string createReqToStartPayload(string targetUsername, string message){
     ostringstream buffer;
     string payload;
-    buffer<<OP_TYPE_PLAY<<OPTYPE_DELIM<<VALUE_TYPE_USERNAME<<VALUE_DELIM<<username<<MAIN_DELIM<<VALUE_TYPE_MESSAGE<<VALUE_DELIM<<message;
+    buffer << OP_TYPE_PLAY << OPTYPE_DELIM << VALUE_TYPE_USERNAME;
+    buffer << VALUE_DELIM << username << MAIN_DELIM << VALUE_TYPE_MESSAGE << VALUE_DELIM << message;
     payload=buffer.str();
     buffer.clear();
     return payload;
 }
+
+string createMovePayload(Dice dice, string message){
+    ostringstream buffer;
+    string payload;
+
+    buffer<<OP_TYPE_MOVE<<OPTYPE_DELIM<<VALUE_TYPE_PREVIOUS_PLAYER<<VALUE_DELIM;
+    buffer<<username<<MAIN_DELIM<<VALUE_TYPE_DICE<<VALUE_DELIM<<to_string(dice);
+    buffer<<MAIN_DELIM<<VALUE_TYPE_TOKEN_NO<<VALUE_DELIM<<"0";
+    payload=buffer.str();
+    buffer.clear();
+    return payload;
+}
+
+
 
 string createAcceptInvitePayload(string inviterUsername, string message)
 {

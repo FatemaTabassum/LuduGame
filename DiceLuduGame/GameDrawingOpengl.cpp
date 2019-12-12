@@ -309,7 +309,7 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
             dice = static_cast<Dice>((rand() % 6) + 1);
             cout << "DICE_VALUE_IS " << dice << endl;
             mouseClickAvailable = false;
-
+            createAndSendPacketMove(dice);
             //running = true;
             //drawImageInDiceArea(dice);
         }
