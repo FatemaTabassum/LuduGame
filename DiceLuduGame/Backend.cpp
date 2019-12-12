@@ -53,7 +53,7 @@ void takeInput() {
 void startOpenglAndGame() {
     shouldStartGame = true;
     if (initialize_window() == 1) {
-        cout << "Error initiliza window" <<endl;
+        cout << "Error initialize window" <<endl;
     }
     addEventToTheScreen();
     render_opengl();

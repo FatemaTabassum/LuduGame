@@ -65,7 +65,6 @@ Square diceSquare;
 
 #pragma mark functions Prototype
 int initialize_window();
-void render_opengl();
 void drawGameBoards(int screenWidth, int screenHeight);
 void setColor(Colors clr);
 void addEventToTheScreen();
@@ -649,6 +648,12 @@ void makeAndStorePlayerSpecificSquare(vector <Position> &posVect) {
     smallSquarePlayerSpecificVector.push_back(sq);
 }
 
+#pragma mark window close callback
+void window_close_callback(GLFWwindow* window)
+{
+    glfwSetWindowShouldClose(window, GLFW_FALSE);
+    exit(0);
+}
 
 #pragma mark Initialize Opengl Window
 int initialize_window() {
@@ -671,13 +676,15 @@ int initialize_window() {
     //make the windows context current
     glfwMakeContextCurrent(window);
     
+    glfwSetWindowCloseCallback(window, window_close_callback);
+
+    
     /* From new tutorial */
     glewExperimental = GL_TRUE; //stops glew crashing on OSX :-/
     if(glewInit() != GLEW_OK)
         throw std::runtime_error("glewInit failed");
     if(!GLEW_VERSION_3_2)
         throw std::runtime_error("OpenGL 3.2 API is not available.");
-    
     glViewport(0.0f, 0.0f, screenWidth, screenHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

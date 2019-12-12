@@ -12,11 +12,6 @@ int main(void) {
     
     takeInput();
     cout<<"main"<<endl;
-//    if (initialize_window() == 1) {
-//        return -1;
-//    }
-//    addEventToTheScreen();
-//    render_opengl();
     printNumOfSquares();
     return 0;
 }

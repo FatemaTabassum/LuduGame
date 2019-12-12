@@ -85,8 +85,6 @@ public:
     void setPos(Position pos);
     void setTokenId(unsigned int id);
     unsigned int getTokenId();
-    bool getIsHome();
-    void setIsHome(bool isHome);
     Position getPos();
     void setTokenColor(Colors color);
     Colors  getTokenColor();

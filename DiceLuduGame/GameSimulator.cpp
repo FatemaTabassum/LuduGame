@@ -35,22 +35,15 @@ void initializeConstantsValues() {
 
 
 void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
-//    for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
-//        for (int j = 0; j < playersStringVector.size(); ) {
-//            if () {
-//
-//            }
-//        }
-//    }
+
     for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
         if ((previousPlayer.compare(playerCurrentlyPlayingList[i].getUsername())) == 0) {
-            Player plyr = playerCurrentlyPlayingList[i];
-            vector<Token>toklist = plyr.getTokenList();
+            vector<Token>toklist = playerCurrentlyPlayingList[i].getTokenList();
             Token tok = toklist[0];
             int nextSquareForToken;
-            if (plyr.getIsHome() == true) {
-                plyr.setIsHome(false);
-                nextSquareForToken = 13 * i + 1;
+            if (playerCurrentlyPlayingList[i].getIsHome() == true) {
+                playerCurrentlyPlayingList[i].setIsHome(false);
+                nextSquareForToken = 13 * i + diceValue;
             } else {
                 nextSquareForToken = tok.getSquareNumber() + diceValue;
             }
@@ -62,19 +55,7 @@ void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
             toklist.push_back(tok);
             playerCurrentlyPlayingList[i].setTokenList(toklist);
             break;
-            
-            // since we have given only one token playing right now.
-            //
-            //            if (rnd == 6 && player.getIsHome() == true) {
-            //                int nextSquareForToken = 13 * i + 1; // first square to start for player is defined by the equeation 13 * n + 1
-            //
-            //                float midX = smallSquareSharedPositionVector[nextSquareForToken].getmidX();
-            //                float midY = smallSquareSharedPositionVector[nextSquareForToken].getmidY();
-            //                tok.setPos(Position(midX, midY));
-            //                tokList.clear();
-            //                tokList.push_back(tok);
-            //                playerCurrentlyPlayingList[i].setTokenList(tokList);
-            //            }
+
         }
     }
 }
@@ -91,11 +72,6 @@ void createAndInitPlayers(int num_of_players){
         playerCurrentlyPlayingList.push_back(newPlayer);
     }
 }
-
-//void startPlayingGame(int numberOfOnlinePlayers, string username) {
-//    createAndInitPlayers(numberOfOnlinePlayers);
-//    //render_opengl();
-//}
 
 void simulateGame() {
     int rnd;
