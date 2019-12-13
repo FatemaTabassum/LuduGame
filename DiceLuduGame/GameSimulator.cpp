@@ -45,7 +45,7 @@ void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
                 playerCurrentlyPlayingList[i].setIsHome(false);
                 nextSquareForToken = 13 * i + 1 + diceValue;
             } else {
-                nextSquareForToken = tok.getSquareNumber() + diceValue;
+                nextSquareForToken = (tok.getSquareNumber() + diceValue) %  52;
             }
             tok.setSquareNumber(nextSquareForToken);
             float midX = smallSquareSharedPositionVector[nextSquareForToken].getmidX();
@@ -54,6 +54,7 @@ void updateValueOfPreviousPlayer(string previousPlayer, int diceValue) {
             toklist.clear();
             toklist.push_back(tok);
             playerCurrentlyPlayingList[i].setTokenList(toklist);
+            dice = static_cast<Dice>(diceValue);
             break;
         }
     }
@@ -68,36 +69,13 @@ void createAndInitPlayers(int num_of_players){
         newPlayer.setIsHome(true);
         newPlayer.setColor(playerColor[i]);
         newPlayer.initializeTokenList(playerTokenColor[i]);
+        newPlayer.setPlayerSpecificStartingSquare(13 * i - 1);
         playerCurrentlyPlayingList.push_back(newPlayer);
     }
 }
 
 void simulateGame() {
-    int rnd;
-    for (int i = 0; i < playerCurrentlyPlayingList.size(); i++) {
-        Player player = playerCurrentlyPlayingList[i];
-//        if (player.getUsername().compare(currentPlayerUsername) == 0 ) {
-//        }
-//        if (i == currentPlayerId) {
-//            rnd = getRandomNumber();
-//            rnd = 6;
-//            Player player = playerCurrentlyPlayingList[i];
-//            vector<Token> tokList =  player.getTokenList();
-//            Token tok = tokList[0]; // since we have given only one token playing right now.
-//
-//            if (rnd == 6 && player.getIsHome() == true) {
-//                int nextSquareForToken = 13 * i + 1; // first square to start for player is defined by the equeation 13 * n + 1
-//
-//                float midX = smallSquareSharedPositionVector[nextSquareForToken].getmidX();
-//                float midY = smallSquareSharedPositionVector[nextSquareForToken].getmidY();
-//                tok.setPos(Position(midX, midY));
-//                tokList.clear();
-//                tokList.push_back(tok);
-//                playerCurrentlyPlayingList[i].setTokenList(tokList);
-//            }
-//            currentPlayerId++;
-//        }
-    }
+   
 }
 
 int getRandomNumber() {

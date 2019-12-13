@@ -78,6 +78,7 @@ private:
     unsigned int token_id;
     Colors tokenColor;
     int squareNumber;
+    bool ishidden;
 public:
     Token();
     Token(unsigned int token_id);
@@ -91,6 +92,8 @@ public:
     unsigned int getToken_id();
     void setSquareNumber(int n);
     int getSquareNumber();
+    bool getIsHidden();
+    void setIsHidden(bool isHidden);
 };
 
 
@@ -101,6 +104,8 @@ private:
     vector< Token > tokenList;
     bool isHome;
     string username;
+    int playerSpecificStartingSquare;
+    bool playerSpecificStartingTokenFlag;
     //player has attribute of type class Position
     
 public:
@@ -119,6 +124,10 @@ public:
     void setIsHome(bool isHome);
     bool getIsHome();
     void setUsername(string username);
+    void setPlayerSpecificStartingSquare(int startingPlayerSpecificSquare);
+    int getPlayerSpecificStartingSquare();
+    void setPlayerSpecificStartingTokenFlag(bool playerSpecificStartingTokenFlag);
+    bool getPlayerSpecificStartingTokenFlag();
     string getUsername();
     vector<Token> getTokenList();
 };

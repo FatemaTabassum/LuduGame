@@ -309,8 +309,7 @@ void mouseButtonCallBack( GLFWwindow *window, int button, int action, int mods) 
             cout << "DICE_VALUE_IS " << dice << endl;
             mouseClickAvailable = false;
             createAndSendPacketMove(dice);
-            //running = true;
-            //drawImageInDiceArea(dice);
+    
         }
     }
 }
@@ -1207,16 +1206,13 @@ void buildSmallSqrPlayer_0() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+        if (firstTimeFlagPlayerSpecificSquare == true ) {
             makeAndStorePlayerSpecificSquare(posVect);
         } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[0]);
         }
         posVect.clear();
     }
-    
-    //cout << " liza  " << endl;
-    //smallSquarePlayerSpecificVector
 }
 
 void buildSmallSqrPlayer_1() {
@@ -1249,7 +1245,7 @@ void buildSmallSqrPlayer_1() {
             }
             posVect.pb(pos);
         }
-        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+        if (firstTimeFlagPlayerSpecificSquare == true ) {
             makeAndStorePlayerSpecificSquare(posVect);
         } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[1]);
@@ -1288,7 +1284,7 @@ void buildSmallSqrPlayer_2() {
             posVect.pb(pos);
         }
         
-        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+        if (firstTimeFlagPlayerSpecificSquare == true ) {
             makeAndStorePlayerSpecificSquare(posVect);
         } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[2]);
@@ -1327,7 +1323,7 @@ void buildSmallSqrPlayer_3() {
             posVect.pb(pos);
         }
         
-        if (firstTimeFlagPlayerSpecificSquare == true && j!= 0) {
+        if (firstTimeFlagPlayerSpecificSquare == true ) {
             makeAndStorePlayerSpecificSquare(posVect);
         } else if(firstTimeFlagPlayerSpecificSquare != true) {
             renderSmallSquare(posVect[0], posVect[1], posVect[2], posVect[3], playerColor[3]);
@@ -1430,7 +1426,9 @@ void drawTokens() {
         vector<Token> tokens = pl.getTokenList();
         for(int j=0;j<tokens.size();j++){
             Position pos = tokens[j].getPos();
-            drawCircle(pos.getxPos(), pos.getyPos(), 0, 20, 36,pl.getPlayer_id());
+            if (!tokens[j].getIsHidden()) {
+                drawCircle(pos.getxPos(), pos.getyPos(), 0, 20, 36,pl.getPlayer_id());
+            }
         }
     }
 }

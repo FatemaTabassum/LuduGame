@@ -79,8 +79,14 @@ void *runClient(void * arg) {
             cout<< "play is sending: "<<payloadString<<endl;
             write(serverSockfd, payloadString.c_str(), strlen(payloadString.c_str())+1);
         }
+        else if(bufferString.compare("quit")==0)
+        {
+            logoutFromServer(false);
+            close(serverSockfd);
+            exit(0);
+        }
         ///User Registration
-        if(bufferString.compare("r")==0)
+        else if(bufferString.compare("r")==0)
         {
             cout<<"Username:";
             cin>>username;
@@ -871,12 +877,12 @@ void userInitialPromt()
 {
     cout<<"1. Enter 'r' for Registration"<<endl;
     cout<<"2. Enter 'l' to login"<<endl;
+    cout<<"3. Enter 'quit' to quit the game"<<endl;
 }
 
 void userAfterLoginPromt()
 {
     cout << "1. Enter 'play' to start play" <<endl;
-    cout << "2. Enter 'quit' to quit game" << endl;
 }
 
 /* Ctrl-C: SIGINT Occurred */

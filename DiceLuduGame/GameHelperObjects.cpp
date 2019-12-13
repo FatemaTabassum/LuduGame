@@ -48,11 +48,13 @@ Token::Token() {
 Token::Token(unsigned int token_id) {
     this->token_id = token_id;
     this->squareNumber = -1;
+    this->ishidden = false;
 }
 Token::Token (Position pos, unsigned int token_id, bool isHome ) {
     this->pos = pos;
     this->token_id = token_id;
     this->squareNumber = -1;
+    this->ishidden = false;
 }
 void Token::setPos(Position pos) {
     this->pos = pos;
@@ -79,22 +81,18 @@ Colors  Token::getTokenColor() {
 void Token::setSquareNumber(int n){
     this->squareNumber = n;
 }
-int Token::getSquareNumber() {
+int Token:: getSquareNumber() {
     return this->squareNumber;
 }
 
-//class Player {
-//private:
-//    unsigned int player_id;
-//    Position pos;
-//    vector< Token > tokenList;
-//    //player has attribute of type class Position
+bool Token:: getIsHidden() {
+    return this->ishidden;
+}
+void Token:: setIsHidden(bool isHidden) {
+    this->setIsHidden(ishidden);
+}
 
-//public:
-//    int posindex;
-//    int status;
-//    int homeway;
-//    Colors color;
+
 
 Player::Player() {
     
@@ -102,12 +100,14 @@ Player::Player() {
 Player::Player(unsigned int player_id) {
     this->player_id = player_id;
     this->isHome = false;
+    this->playerSpecificStartingTokenFlag = false;
 }
 Player::Player(Position p) {
     pos = pos;
     posindex = 0;
     status = 0;
     isHome = false;
+    this->playerSpecificStartingTokenFlag = false;
 }
 void Player:: setPosition(int pindex,Position p) {
     posindex = pindex;
@@ -134,6 +134,22 @@ void Player:: setUsername(string username) {
 }
 string Player:: getUsername() {
     return this->username;
+}
+
+void Player:: setPlayerSpecificStartingSquare(int playerSpecificStartingSquare) {
+    this->playerSpecificStartingSquare = playerSpecificStartingSquare;
+}
+
+int Player:: getPlayerSpecificStartingSquare() {
+    return this->playerSpecificStartingSquare;
+}
+
+
+void Player:: setPlayerSpecificStartingTokenFlag(bool playerSpecificStartingTokenFlag) {
+    this->playerSpecificStartingTokenFlag = playerSpecificStartingTokenFlag;
+}
+bool Player:: getPlayerSpecificStartingTokenFlag() {
+    return this->playerSpecificStartingTokenFlag;
 }
 
 unsigned int Player:: getPlayer_id() {
