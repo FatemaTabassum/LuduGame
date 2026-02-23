@@ -70,6 +70,7 @@ Game logic updates trigger re-rendering.
 <img width="777" height="618" alt="ludu_page_1" src="https://github.com/user-attachments/assets/5cf93b81-c299-4dda-8570-8c0890bc7a9a" />
 
 ***Author***
+
 Fatema Tabassum
 PhD Candidate – Computer Science
 Focus: Systems, Security & Machine Learning
