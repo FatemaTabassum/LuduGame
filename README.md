@@ -68,8 +68,6 @@ Game logic updates trigger re-rendering.
 
 ### Demo
 <img width="777" height="618" alt="ludu_page_1" src="https://github.com/user-attachments/assets/75f25c0f-a106-43ec-8ffc-b633680147cf" />
-<img width="1700" height="2200" alt="ludu_page_2" src="https://github.com/user-attachments/assets/664e7da3-00f0-44d9-b28c-7f32e7504ec2" />
-
 
 ***Author***
 Fatema Tabassum
