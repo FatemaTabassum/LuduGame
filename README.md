@@ -67,7 +67,7 @@ Game logic updates trigger re-rendering.
 - Limited to 2 players (extendable)
 
 ### Demo
-<img width="777" height="618" alt="ludu_page_1" src="https://github.com/user-attachments/assets/75f25c0f-a106-43ec-8ffc-b633680147cf" />
+<img width="777" height="618" alt="ludu_page_1" src="https://github.com/user-attachments/assets/5cf93b81-c299-4dda-8570-8c0890bc7a9a" />
 
 ***Author***
 Fatema Tabassum
