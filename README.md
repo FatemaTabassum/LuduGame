@@ -1,4 +1,4 @@
-🎲 LAN-Based Multiplayer Ludu Game (C++ | OpenGL | Socket Programming)
+# 🎲 LAN-Based Multiplayer Ludu Game (C++ | OpenGL | Socket Programming)
 
 A real-time 2-player multiplayer Ludu game built in C++ using OpenGL for graphics and
 TCP socket programming for LAN-based communication.
